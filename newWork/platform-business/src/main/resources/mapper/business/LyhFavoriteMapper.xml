@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.horzits.business.mapper.LyhFavoriteMapper">
+
+  <resultMap id="LyhFavoriteMap" type="com.horzits.business.domain.LyhFavorite">
+    <id column="favorite_id" property="favoriteId"/>
+    <result column="user_id" property="userId"/>
+    <result column="biz_type" property="bizType"/>
+    <result column="target_id" property="targetId"/>
+    <result column="create_time" property="createTime"/>
+  </resultMap>
+
+  <insert id="insert" parameterType="com.horzits.business.domain.LyhFavorite" useGeneratedKeys="true" keyProperty="favoriteId">
+    insert into lyh_favorite (user_id, biz_type, target_id, create_time)
+    values (#{userId}, #{bizType}, #{targetId}, now())
+  </insert>
+
+  <delete id="deleteByUserBizTarget">
+    delete from lyh_favorite
+    where user_id = #{userId} and biz_type = #{bizType} and target_id = #{targetId}
+  </delete>
+
+  <select id="existsByUserBizTarget" resultType="java.lang.Integer">
+    select count(1)
+    from lyh_favorite
+    where user_id = #{userId} and biz_type = #{bizType} and target_id = #{targetId}
+  </select>
+
+  <select id="selectTargetIdsByUserAndBiz" resultType="java.lang.Long">
+    select target_id
+    from lyh_favorite
+    where user_id = #{userId} and biz_type = #{bizType}
+    order by favorite_id desc
+  </select>
+</mapper>

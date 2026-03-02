@@ -1,0 +1,132 @@
+package ${packageName}.controller;
+
+import java.util.List;
+import javax.servlet.http.HttpServletResponse;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
+import com.horzits.common.annotation.Log;
+import com.horzits.common.utils.SecurityUtils;
+import com.horzits.common.core.controller.BaseController;
+import com.horzits.common.core.domain.AjaxResult;
+import com.horzits.common.core.domain.AppRestResult;
+import com.horzits.common.enums.BusinessType;
+import com.horzits.common.core.domain.model.LoginUser;
+import ${packageName}.domain.${ClassName};
+import ${packageName}.domain.vo.${ClassName}Vo;
+import ${packageName}.service.I${ClassName}Service;
+import com.horzits.common.utils.poi.ExcelUtil;
+#if($table.crud || $table.sub)
+import com.horzits.common.core.page.TableDataInfo;
+#elseif($table.tree)
+#end
+
+/**
+ * ${functionName} Controller
+ * 
+ * @author ${author}
+ * @date ${datetime}
+ */
+
+@RestController
+@RequestMapping("/${moduleName}/${businessName}")
+@Api(tags = "${functionName}")
+public class ${ClassName}Controller extends BaseController {
+    @Autowired
+    private I${ClassName}Service ${className}Service;
+
+    /**
+     * 查询${functionName}列表
+     */
+    @ApiOperation(value ="查询${functionName}列表",httpMethod = "GET",response = AppRestResult.class)
+    @PreAuthorize("@ss.hasPermi('${permissionPrefix}:list')")
+    @GetMapping("/list")
+#if($table.crud || $table.sub)
+    public TableDataInfo list(${ClassName} ${className}) {
+        startPage();
+        List<${ClassName}> list = ${className}Service.select${ClassName}List(${className});
+        return getDataTable(list);
+    }
+#elseif($table.tree)
+    public AppRestResult list(${ClassName} ${className}) {
+        List<${ClassName}> list = ${className}Service.select${ClassName}List(${className});
+        return AppRestResult(list);
+    }
+#end
+
+    /**
+     * 导出${functionName}列表
+     */
+    @ApiOperation(value ="导出${functionName}列表",httpMethod = "POST",response = AppRestResult.class)
+    @PreAuthorize("@ss.hasPermi('${permissionPrefix}:export')")
+    @Log(title = "${functionName}", businessType = BusinessType.EXPORT)
+    @PostMapping("/export")
+    public void export(HttpServletResponse response, ${ClassName}Vo ${className}) {
+        List<${ClassName}> list = ${className}Service.select${ClassName}List(${className});
+        ExcelUtil<${ClassName}> util = new ExcelUtil<${ClassName}>(${ClassName}.class);
+        List<String> exportColumns = ${className}.getExportColumns();
+        if(exportColumns != null && !exportColumns.isEmpty()){
+            String[] columnsToHide = exportColumns.toArray(new String[0]);
+            util.hideColumn(columnsToHide);
+        }
+        util.exportExcel(response, list, "${functionName}数据");
+    }
+
+    /**
+     * 获取${functionName}详细信息
+     */
+    @ApiOperation(value ="获取${functionName}详细信息",httpMethod = "GET",response = AppRestResult.class)
+    @PreAuthorize("@ss.hasPermi('${permissionPrefix}:query')")
+    @GetMapping(value = "/{${pkColumn.javaField}}")
+    public AppRestResult getInfo(@PathVariable("${pkColumn.javaField}") ${pkColumn.javaType} ${pkColumn.javaField}) {
+            ${className}Service.select${ClassName}By${pkColumn.capJavaField}(${pkColumn.javaField});
+        return AppRestResult.success();
+    }
+
+    /**
+     * 新增${functionName}
+     */
+    @ApiOperation(value ="新增${functionName}",httpMethod = "POST",response = AppRestResult.class)
+    @PreAuthorize("@ss.hasPermi('${permissionPrefix}:add')")
+    @Log(title = "${functionName}", businessType = BusinessType.INSERT)
+    @PostMapping
+    public AppRestResult add(@RequestBody ${ClassName} ${className}) {
+        LoginUser loginUser = SecurityUtils.getLoginUser();
+        ${className}.setCreateBy(loginUser.getUser().getUserName());
+            ${className}Service.insert${ClassName}(${className});
+        return AppRestResult.success();
+    }
+
+    /**
+     * 修改${functionName}
+     */
+    @ApiOperation(value ="修改${functionName}",httpMethod = "PUT",response = AppRestResult.class)
+    @PreAuthorize("@ss.hasPermi('${permissionPrefix}:edit')")
+    @Log(title = "${functionName}", businessType = BusinessType.UPDATE)
+    @PutMapping
+    public AppRestResult edit(@RequestBody ${ClassName} ${className}) {
+        LoginUser loginUser = SecurityUtils.getLoginUser();
+        ${className}.setUpdateBy(loginUser.getUser().getUserName());
+            ${className}Service.update${ClassName}(${className});
+        return AppRestResult.success();
+    }
+
+    /**
+     * 删除${functionName}
+     */
+    @ApiOperation(value ="删除${functionName}",httpMethod = "DELETE",response = AppRestResult.class)
+    @PreAuthorize("@ss.hasPermi('${permissionPrefix}:remove')")
+    @Log(title = "${functionName}", businessType = BusinessType.DELETE)
+	@DeleteMapping("/{${pkColumn.javaField}s}")
+    public AppRestResult remove(@PathVariable ${pkColumn.javaType}[] ${pkColumn.javaField}s) {
+            ${className}Service.delete${ClassName}By${pkColumn.capJavaField}s(${pkColumn.javaField}s);
+        return AppRestResult.success();
+    }
+}

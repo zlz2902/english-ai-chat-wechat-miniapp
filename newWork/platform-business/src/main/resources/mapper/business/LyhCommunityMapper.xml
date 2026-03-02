@@ -1,0 +1,170 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.horzits.business.mapper.LyhCommunityMapper">
+    
+    <resultMap type="LyhCommunity" id="LyhCommunityResult">
+        <result property="postId"    column="post_id"    />
+        <result property="userId"    column="user_id"    />
+        <result property="content"    column="content"    />
+        <result property="images"    column="images"    />
+        <result property="likesCount"    column="likes_count"    />
+        <result property="commentsCount"    column="comments_count"    />
+        <result property="visibility"    column="visibility"    />
+        <result property="status"    column="status"    />
+        <result property="delFlag"    column="del_flag"    />
+        <result property="createBy"    column="create_by"    />
+        <result property="createTime"    column="create_time"    />
+        <result property="updateBy"    column="update_by"    />
+        <result property="updateTime"    column="update_time"    />
+        <result property="remark"    column="remark"    />
+        <result property="nickName"    column="nick_name"    />
+        <result property="avatarUrl"    column="avatar_url"    />
+    </resultMap>
+
+    <sql id="selectLyhCommunityVo">
+        select p.post_id, p.user_id, p.content, p.images, p.likes_count, p.comments_count, p.visibility, p.status, p.del_flag, p.create_by, p.create_time, p.remark,
+               coalesce(u.nick_name, su.nick_name) as nick_name,
+               coalesce(u.avatar_url, su.avatar) as avatar_url
+        from lyh_post p
+        left join lyh_user_profile u on p.user_id = u.user_id
+        left join sys_user su on p.user_id = su.user_id
+    </sql>
+
+    <select id="selectCommunityList" parameterType="LyhCommunity" resultMap="LyhCommunityResult">
+        <include refid="selectLyhCommunityVo"/>
+        <where>  
+            <if test="content != null  and content != ''"> and p.content like concat('%', #{content}, '%')</if>
+            <if test="userId != null "> and p.user_id = #{userId}</if>
+            <if test="status != null  and status != ''"> and p.status = #{status}</if>
+            and p.del_flag = '0'
+        </where>
+        order by p.create_time desc
+    </select>
+    
+    <insert id="insertCommunity" parameterType="LyhCommunity" useGeneratedKeys="true" keyProperty="postId">
+        insert into lyh_post
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="userId != null">user_id,</if>
+            <if test="content != null">content,</if>
+            <if test="images != null">images,</if>
+            <if test="likesCount != null">likes_count,</if>
+            <if test="commentsCount != null">comments_count,</if>
+            <if test="visibility != null">visibility,</if>
+            <if test="status != null">status,</if>
+            <if test="delFlag != null">del_flag,</if>
+            <if test="createBy != null">create_by,</if>
+            <if test="createTime != null">create_time,</if>
+            <if test="remark != null">remark,</if>
+         </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="userId != null">#{userId},</if>
+            <if test="content != null">#{content},</if>
+            <if test="images != null">#{images},</if>
+            <if test="likesCount != null">#{likesCount},</if>
+            <if test="commentsCount != null">#{commentsCount},</if>
+            <if test="visibility != null">#{visibility},</if>
+            <if test="status != null">#{status},</if>
+            <if test="delFlag != null">#{delFlag},</if>
+            <if test="createBy != null">#{createBy},</if>
+            <if test="createTime != null">#{createTime},</if>
+            <if test="remark != null">#{remark},</if>
+         </trim>
+    </insert>
+
+    <update id="updateCommunity" parameterType="LyhCommunity">
+        update lyh_post
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="userId != null">user_id = #{userId},</if>
+            <if test="content != null and content != ''">content = #{content},</if>
+            <if test="images != null">images = #{images},</if>
+            <if test="likesCount != null">likes_count = #{likesCount},</if>
+            <if test="commentsCount != null">comments_count = #{commentsCount},</if>
+            <if test="visibility != null">visibility = #{visibility},</if>
+            <if test="status != null">status = #{status},</if>
+            <if test="updateBy != null">update_by = #{updateBy},</if>
+            <if test="updateTime != null">update_time = #{updateTime},</if>
+            <if test="remark != null">remark = #{remark},</if>
+        </trim>
+        where post_id = #{postId}
+    </update>
+
+    <delete id="deleteCommunityById" parameterType="Long">
+        update lyh_post set del_flag = '2' where post_id = #{postId}
+    </delete>
+
+    <delete id="deleteCommunityByIds" parameterType="String">
+        update lyh_post set del_flag = '2' where post_id in 
+        <foreach item="postId" collection="array" open="(" separator="," close=")">
+            #{postId}
+        </foreach>
+    </delete>
+
+    <select id="checkUserLiked" resultType="int">
+        select count(1) from lyh_post_like where post_id = #{postId} and user_id = #{userId}
+    </select>
+
+    <insert id="insertPostLike">
+        insert into lyh_post_like(post_id, user_id, create_time) values(#{postId}, #{userId}, sysdate())
+    </insert>
+
+    <delete id="deletePostLike">
+        delete from lyh_post_like where post_id = #{postId} and user_id = #{userId}
+    </delete>
+
+    <update id="incrementLikesCount">
+        update lyh_post set likes_count = likes_count + 1 where post_id = #{postId}
+    </update>
+
+    <update id="decrementLikesCount">
+        update lyh_post set likes_count = likes_count - 1 where post_id = #{postId}
+    </update>
+
+    <insert id="insertPostComment">
+        insert into lyh_post_comment(post_id, user_id, content, del_flag, create_time) values(#{postId}, #{userId}, #{content}, '0', sysdate())
+    </insert>
+
+    <update id="incrementCommentsCount">
+        update lyh_post set comments_count = comments_count + 1 where post_id = #{postId}
+    </update>
+
+    <resultMap type="LyhPostComment" id="LyhPostCommentResult">
+        <result property="commentId"    column="comment_id"    />
+        <result property="postId"    column="post_id"    />
+        <result property="userId"    column="user_id"    />
+        <result property="parentId"    column="parent_id"    />
+        <result property="content"    column="content"    />
+        <result property="status"    column="status"    />
+        <result property="delFlag"    column="del_flag"    />
+        <result property="createTime"    column="create_time"    />
+        <result property="nickName"    column="nick_name"    />
+        <result property="avatarUrl"    column="avatar_url"    />
+    </resultMap>
+
+    <sql id="selectLyhPostCommentVo">
+        select c.comment_id, c.post_id, c.user_id, c.parent_id, c.content, c.status, c.del_flag, c.create_time,
+               coalesce(u.nick_name, su.nick_name) as nick_name,
+               coalesce(u.avatar_url, su.avatar) as avatar_url
+        from lyh_post_comment c
+        left join lyh_user_profile u on c.user_id = u.user_id
+        left join sys_user su on c.user_id = su.user_id
+    </sql>
+
+    <select id="selectCommentList" parameterType="LyhPostComment" resultMap="LyhPostCommentResult">
+        <include refid="selectLyhPostCommentVo"/>
+        <where>  
+            <if test="postId != null "> and c.post_id = #{postId}</if>
+            <if test="userId != null "> and c.user_id = #{userId}</if>
+        </where>
+        order by c.create_time desc
+    </select>
+
+    <delete id="deleteCommentByIds" parameterType="String">
+        update lyh_post_comment set del_flag = '2' where comment_id in 
+        <foreach item="commentId" collection="array" open="(" separator="," close=")">
+            #{commentId}
+        </foreach>
+    </delete>
+    
+</mapper>
