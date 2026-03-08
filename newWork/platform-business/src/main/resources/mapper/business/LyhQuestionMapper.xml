@@ -1,0 +1,119 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.horzits.business.mapper.LyhQuestionMapper">
+    
+    <resultMap type="com.horzits.business.domain.LyhQuestion" id="LyhQuestionResult">
+        <result property="questionId"   column="question_id" />
+        <result property="categoryId"   column="category_id" />
+        <result property="topic"        column="topic" />
+        <result property="difficulty"   column="difficulty" />
+        <result property="questionText" column="question_text" />
+        <result property="tags"         column="tags" />
+        <result property="audioUrl"     column="audio_url" />
+        <result property="status"       column="status" />
+        <result property="delFlag"      column="del_flag" />
+        <result property="createBy"     column="create_by" />
+        <result property="createTime"   column="create_time" />
+        <result property="updateBy"     column="update_by" />
+        <result property="updateTime"   column="update_time" />
+        <result property="remark"       column="remark" />
+    </resultMap>
+
+    <sql id="selectLyhQuestionVo">
+        select question_id, category_id, topic, difficulty, question_text, tags, audio_url, status, del_flag, create_by, create_time, update_by, update_time, remark 
+        from lyh_question
+    </sql>
+
+    <select id="selectLyhQuestionList" parameterType="com.horzits.business.domain.LyhQuestion" resultMap="LyhQuestionResult">
+        <include refid="selectLyhQuestionVo" />
+        <where>
+            <if test="delFlag != null and delFlag != ''"> and del_flag = #{delFlag}</if>
+            <if test="categoryId != null"> and category_id = #{categoryId}</if>
+            <if test="difficulty != null and difficulty != ''"> and difficulty = #{difficulty}</if>
+            <if test="status != null and status != ''"> and status = #{status}</if>
+            <if test="topic != null and topic != ''"> and topic like concat('%', #{topic}, '%')</if>
+        </where>
+        order by question_id desc
+    </select>
+
+    <select id="selectLyhQuestionByQuestionId" parameterType="Long" resultMap="LyhQuestionResult">
+        <include refid="selectLyhQuestionVo"/>
+        where question_id = #{questionId}
+    </select>
+
+    <insert id="insertLyhQuestion" parameterType="com.horzits.business.domain.LyhQuestion" useGeneratedKeys="true" keyProperty="questionId">
+        insert into lyh_question
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="categoryId != null">category_id,</if>
+            <if test="topic != null and topic != ''">topic,</if>
+            <if test="difficulty != null and difficulty != ''">difficulty,</if>
+            <if test="questionText != null and questionText != ''">question_text,</if>
+            <if test="tags != null and tags != ''">tags,</if>
+            <if test="audioUrl != null and audioUrl != ''">audio_url,</if>
+            <if test="status != null">status,</if>
+            <if test="delFlag != null">del_flag,</if>
+            <if test="createBy != null">create_by,</if>
+            <if test="createTime != null">create_time,</if>
+            <if test="updateBy != null">update_by,</if>
+            <if test="updateTime != null">update_time,</if>
+            <if test="remark != null">remark,</if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="categoryId != null">#{categoryId},</if>
+            <if test="topic != null and topic != ''">#{topic},</if>
+            <if test="difficulty != null and difficulty != ''">#{difficulty},</if>
+            <if test="questionText != null and questionText != ''">#{questionText},</if>
+            <if test="tags != null and tags != ''">#{tags},</if>
+            <if test="audioUrl != null and audioUrl != ''">#{audioUrl},</if>
+            <if test="status != null">#{status},</if>
+            <if test="delFlag != null">#{delFlag},</if>
+            <if test="createBy != null">#{createBy},</if>
+            <if test="createTime != null">#{createTime},</if>
+            <if test="updateBy != null">#{updateBy},</if>
+            <if test="updateTime != null">#{updateTime},</if>
+            <if test="remark != null">#{remark},</if>
+        </trim>
+    </insert>
+
+    <update id="updateLyhQuestion" parameterType="com.horzits.business.domain.LyhQuestion">
+        update lyh_question
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="categoryId != null">category_id = #{categoryId},</if>
+            <if test="topic != null and topic != ''">topic = #{topic},</if>
+            <if test="difficulty != null and difficulty != ''">difficulty = #{difficulty},</if>
+            <if test="questionText != null and questionText != ''">question_text = #{questionText},</if>
+            <if test="tags != null and tags != ''">tags = #{tags},</if>
+            <if test="audioUrl != null and audioUrl != ''">audio_url = #{audioUrl},</if>
+            <if test="status != null">status = #{status},</if>
+            <if test="delFlag != null">del_flag = #{delFlag},</if>
+            <if test="createBy != null">create_by = #{createBy},</if>
+            <if test="createTime != null">create_time = #{createTime},</if>
+            <if test="updateBy != null">update_by = #{updateBy},</if>
+            <if test="updateTime != null">update_time = #{updateTime},</if>
+            <if test="remark != null">remark = #{remark},</if>
+        </trim>
+        where question_id = #{questionId}
+    </update>
+
+    <delete id="deleteLyhQuestionByQuestionId" parameterType="Long">
+        delete from lyh_question where question_id = #{questionId}
+    </delete>
+
+    <delete id="deleteLyhQuestionByQuestionIds" parameterType="String">
+        delete from lyh_question where question_id in 
+        <foreach item="questionId" collection="array" open="(" separator="," close=")">
+            #{questionId}
+        </foreach>
+    </delete>
+
+    <select id="selectFavoritedQuestions" parameterType="Long" resultMap="LyhQuestionResult">
+        select q.*
+        from lyh_question q
+        inner join lyh_favorite f on q.question_id = f.target_id
+        where f.user_id = #{userId} and f.biz_type = '1'
+        order by f.create_time desc
+    </select>
+</mapper>
+

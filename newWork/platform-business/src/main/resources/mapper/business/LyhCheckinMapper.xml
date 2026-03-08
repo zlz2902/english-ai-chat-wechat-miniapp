@@ -1,0 +1,94 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.horzits.business.mapper.LyhCheckinMapper">
+    
+    <resultMap type="com.horzits.business.domain.LyhCheckin" id="LyhCheckinResult">
+        <result property="checkinId"    column="checkin_id"    />
+        <result property="userId"    column="user_id"    />
+        <result property="checkinDate"    column="checkin_date"    />
+        <result property="streakAfter"    column="streak_after"    />
+        <result property="createTime"    column="create_time"    />
+        <result property="userName"     column="user_name"    />
+    </resultMap>
+
+    <sql id="selectLyhCheckinVo">
+        select c.checkin_id, c.user_id, c.checkin_date, c.streak_after, c.create_time, u.nick_name as user_name
+        from lyh_checkin c
+        left join sys_user u on c.user_id = u.user_id
+    </sql>
+
+    <select id="selectLyhCheckinList" parameterType="com.horzits.business.domain.LyhCheckin" resultMap="LyhCheckinResult">
+        <include refid="selectLyhCheckinVo"/>
+        <where>  
+            <if test="userId != null "> and c.user_id = #{userId}</if>
+            <if test="checkinDate != null "> and c.checkin_date = #{checkinDate}</if>
+            <if test="userName != null  and userName != ''"> and u.nick_name like concat('%', #{userName}, '%')</if>
+        </where>
+    </select>
+    
+    <select id="selectLyhCheckinByCheckinId" parameterType="Long" resultMap="LyhCheckinResult">
+        <include refid="selectLyhCheckinVo"/>
+        where c.checkin_id = #{checkinId}
+    </select>
+    
+    <select id="selectByUserIdAndDate" resultMap="LyhCheckinResult">
+        <include refid="selectLyhCheckinVo"/>
+        where c.user_id = #{userId} and c.checkin_date = #{date}
+        limit 1
+    </select>
+
+    <select id="selectLatestByUserId" resultMap="LyhCheckinResult">
+        <include refid="selectLyhCheckinVo"/>
+        where c.user_id = #{userId}
+        order by c.checkin_date desc
+        limit 1
+    </select>
+
+    <select id="selectCountByUserId" resultType="int">
+        select count(1) from lyh_checkin c where c.user_id = #{userId}
+    </select>
+
+    <select id="selectCountByDate" resultType="int">
+        select count(1) from lyh_checkin where date_format(create_time,'%y%m%d') = date_format(#{date},'%y%m%d')
+    </select>
+        
+    <insert id="insertLyhCheckin" parameterType="com.horzits.business.domain.LyhCheckin" useGeneratedKeys="true" keyProperty="checkinId">
+        insert into lyh_checkin
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="userId != null">user_id,</if>
+            <if test="checkinDate != null">checkin_date,</if>
+            <if test="streakAfter != null">streak_after,</if>
+            <if test="createTime != null">create_time,</if>
+         </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="userId != null">#{userId},</if>
+            <if test="checkinDate != null">#{checkinDate},</if>
+            <if test="streakAfter != null">#{streakAfter},</if>
+            <if test="createTime != null">#{createTime},</if>
+         </trim>
+    </insert>
+
+    <update id="updateLyhCheckin" parameterType="com.horzits.business.domain.LyhCheckin">
+        update lyh_checkin
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="userId != null">user_id = #{userId},</if>
+            <if test="checkinDate != null">checkin_date = #{checkinDate},</if>
+            <if test="streakAfter != null">streak_after = #{streakAfter},</if>
+            <if test="createTime != null">create_time = #{createTime},</if>
+        </trim>
+        where checkin_id = #{checkinId}
+    </update>
+
+    <delete id="deleteLyhCheckinByCheckinId" parameterType="Long">
+        delete from lyh_checkin where checkin_id = #{checkinId}
+    </delete>
+
+    <delete id="deleteLyhCheckinByCheckinIds" parameterType="String">
+        delete from lyh_checkin where checkin_id in 
+        <foreach item="checkinId" collection="array" open="(" separator="," close=")">
+            #{checkinId}
+        </foreach>
+    </delete>
+</mapper>

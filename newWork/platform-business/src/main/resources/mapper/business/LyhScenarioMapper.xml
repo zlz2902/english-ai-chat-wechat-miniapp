@@ -1,0 +1,117 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.horzits.business.mapper.LyhScenarioMapper">
+    
+    <resultMap type="com.horzits.business.domain.LyhScenario" id="LyhScenarioResult">
+        <result property="scenarioId"   column="scenario_id" />
+        <result property="title"        column="title" />
+        <result property="imageUrl"     column="image_url" />
+        <result property="level"        column="level" />
+        <result property="description"  column="description" />
+        <result property="personaName"  column="persona_name" />
+        <result property="personaPrompt" column="persona_prompt" />
+        <result property="scriptJson"   column="script_json" />
+        <result property="sortOrder"    column="sort_order" />
+        <result property="status"       column="status" />
+        <result property="delFlag"      column="del_flag" />
+        <result property="createBy"     column="create_by" />
+        <result property="createTime"   column="create_time" />
+        <result property="updateBy"     column="update_by" />
+        <result property="updateTime"   column="update_time" />
+        <result property="remark"       column="remark" />
+    </resultMap>
+
+    <sql id="selectLyhScenarioVo">
+        select scenario_id, title, image_url, level, description, persona_name, persona_prompt, script_json, sort_order, status, del_flag, create_by, create_time, update_by, update_time, remark
+        from lyh_scenario
+    </sql>
+
+    <select id="selectLyhScenarioList" parameterType="com.horzits.business.domain.LyhScenario" resultMap="LyhScenarioResult">
+        <include refid="selectLyhScenarioVo"/>
+        <where>
+            <if test="delFlag != null and delFlag != ''"> and del_flag = #{delFlag}</if>
+            <if test="status != null and status != ''"> and status = #{status}</if>
+            <if test="level != null and level != ''"> and level = #{level}</if>
+            <if test="title != null and title != ''"> and title like concat('%', #{title}, '%')</if>
+        </where>
+        order by sort_order asc, scenario_id asc
+    </select>
+
+    <select id="selectLyhScenarioByScenarioId" parameterType="Long" resultMap="LyhScenarioResult">
+        <include refid="selectLyhScenarioVo"/>
+        where scenario_id = #{scenarioId}
+    </select>
+
+    <insert id="insertLyhScenario" parameterType="com.horzits.business.domain.LyhScenario" useGeneratedKeys="true" keyProperty="scenarioId">
+        insert into lyh_scenario
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="title != null and title != ''">title,</if>
+            <if test="imageUrl != null and imageUrl != ''">image_url,</if>
+            <if test="level != null and level != ''">level,</if>
+            <if test="description != null and description != ''">description,</if>
+            <if test="personaName != null">persona_name,</if>
+            <if test="personaPrompt != null">persona_prompt,</if>
+            <if test="scriptJson != null">script_json,</if>
+            <if test="sortOrder != null">sort_order,</if>
+            <if test="status != null">status,</if>
+            <if test="delFlag != null">del_flag,</if>
+            <if test="createBy != null">create_by,</if>
+            <if test="createTime != null">create_time,</if>
+            <if test="updateBy != null">update_by,</if>
+            <if test="updateTime != null">update_time,</if>
+            <if test="remark != null">remark,</if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="title != null and title != ''">#{title},</if>
+            <if test="imageUrl != null and imageUrl != ''">#{imageUrl},</if>
+            <if test="level != null and level != ''">#{level},</if>
+            <if test="description != null and description != ''">#{description},</if>
+            <if test="personaName != null">#{personaName},</if>
+            <if test="personaPrompt != null">#{personaPrompt},</if>
+            <if test="scriptJson != null">#{scriptJson},</if>
+            <if test="sortOrder != null">#{sortOrder},</if>
+            <if test="status != null">#{status},</if>
+            <if test="delFlag != null">#{delFlag},</if>
+            <if test="createBy != null">#{createBy},</if>
+            <if test="createTime != null">#{createTime},</if>
+            <if test="updateBy != null">#{updateBy},</if>
+            <if test="updateTime != null">#{updateTime},</if>
+            <if test="remark != null">#{remark},</if>
+        </trim>
+    </insert>
+
+    <update id="updateLyhScenario" parameterType="com.horzits.business.domain.LyhScenario">
+        update lyh_scenario
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="title != null and title != ''">title = #{title},</if>
+            <if test="imageUrl != null and imageUrl != ''">image_url = #{imageUrl},</if>
+            <if test="level != null and level != ''">level = #{level},</if>
+            <if test="description != null and description != ''">description = #{description},</if>
+            <if test="personaName != null">persona_name = #{personaName},</if>
+            <if test="personaPrompt != null">persona_prompt = #{personaPrompt},</if>
+            <if test="scriptJson != null">script_json = #{scriptJson},</if>
+            <if test="sortOrder != null">sort_order = #{sortOrder},</if>
+            <if test="status != null">status = #{status},</if>
+            <if test="delFlag != null">del_flag = #{delFlag},</if>
+            <if test="createBy != null">create_by = #{createBy},</if>
+            <if test="createTime != null">create_time = #{createTime},</if>
+            <if test="updateBy != null">update_by = #{updateBy},</if>
+            <if test="updateTime != null">update_time = #{updateTime},</if>
+            <if test="remark != null">remark = #{remark},</if>
+        </trim>
+        where scenario_id = #{scenarioId}
+    </update>
+
+    <delete id="deleteLyhScenarioByScenarioId" parameterType="Long">
+        delete from lyh_scenario where scenario_id = #{scenarioId}
+    </delete>
+
+    <delete id="deleteLyhScenarioByScenarioIds" parameterType="String">
+        delete from lyh_scenario where scenario_id in 
+        <foreach item="scenarioId" collection="array" open="(" separator="," close=")">
+            #{scenarioId}
+        </foreach>
+    </delete>
+</mapper>

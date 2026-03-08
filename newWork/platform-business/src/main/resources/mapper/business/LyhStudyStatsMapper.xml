@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.horzits.business.mapper.LyhStudyStatsMapper">
+    
+    <resultMap type="LyhStudyStats" id="LyhStudyStatsResult">
+        <result property="userId"    column="user_id"    />
+        <result property="totalDays"    column="total_days"    />
+        <result property="totalWords"    column="total_words"    />
+        <result property="score"    column="score"    />
+        <result property="lastStudyTime"    column="last_study_time"    />
+        <result property="updateTime"    column="update_time"    />
+    </resultMap>
+
+    <sql id="selectLyhStudyStatsVo">
+        select user_id, total_days, total_words, score, last_study_time, update_time from lyh_study_stats
+    </sql>
+
+    <select id="selectLyhStudyStatsList" parameterType="LyhStudyStats" resultMap="LyhStudyStatsResult">
+        <include refid="selectLyhStudyStatsVo"/>
+        <where>  
+            <if test="userId != null "> and user_id = #{userId}</if>
+            <if test="totalDays != null "> and total_days = #{totalDays}</if>
+            <if test="totalWords != null "> and total_words = #{totalWords}</if>
+            <if test="score != null "> and score = #{score}</if>
+            <if test="lastStudyTime != null "> and last_study_time = #{lastStudyTime}</if>
+            <if test="updateTime != null "> and update_time = #{updateTime}</if>
+        </where>
+    </select>
+    
+    <select id="selectLyhStudyStatsByUserId" parameterType="Long" resultMap="LyhStudyStatsResult">
+        <include refid="selectLyhStudyStatsVo"/>
+        where user_id = #{userId}
+    </select>
+        
+    <insert id="insertLyhStudyStats" parameterType="LyhStudyStats">
+        insert into lyh_study_stats
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="userId != null">user_id,</if>
+            <if test="totalDays != null">total_days,</if>
+            <if test="totalWords != null">total_words,</if>
+            <if test="score != null">score,</if>
+            <if test="lastStudyTime != null">last_study_time,</if>
+            <if test="updateTime != null">update_time,</if>
+         </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="userId != null">#{userId},</if>
+            <if test="totalDays != null">#{totalDays},</if>
+            <if test="totalWords != null">#{totalWords},</if>
+            <if test="score != null">#{score},</if>
+            <if test="lastStudyTime != null">#{lastStudyTime},</if>
+            <if test="updateTime != null">#{updateTime},</if>
+         </trim>
+    </insert>
+
+    <update id="updateLyhStudyStats" parameterType="LyhStudyStats">
+        update lyh_study_stats
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="totalDays != null">total_days = #{totalDays},</if>
+            <if test="totalWords != null">total_words = #{totalWords},</if>
+            <if test="score != null">score = #{score},</if>
+            <if test="lastStudyTime != null">last_study_time = #{lastStudyTime},</if>
+            <if test="updateTime != null">update_time = #{updateTime},</if>
+        </trim>
+        where user_id = #{userId}
+    </update>
+
+    <delete id="deleteLyhStudyStatsByUserId" parameterType="Long">
+        delete from lyh_study_stats where user_id = #{userId}
+    </delete>
+
+    <delete id="deleteLyhStudyStatsByUserIds" parameterType="String">
+        delete from lyh_study_stats where user_id in 
+        <foreach item="userId" collection="array" open="(" separator="," close=")">
+            #{userId}
+        </foreach>
+    </delete>
+</mapper>

@@ -1,0 +1,17 @@
+package ${packageName}.domain.vo;
+
+
+import ${packageName}.domain.${ClassName};
+import lombok.Data;
+
+import java.util.List;
+
+@Data
+public class ${ClassName}Vo extends ${ClassName} {
+
+    /**
+    * 导出数据列
+    */
+    private List<String> exportColumns;
+
+}
