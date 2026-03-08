@@ -1,0 +1,125 @@
+page {
+  background-color: #ffffff;
+  font-family: -apple-system, BlinkMacSystemFont, 'Helvetica Neue', Helvetica,
+    Segoe UI, Arial, Roboto, 'PingFang SC', 'miui', 'Hiragino Sans GB', 'Microsoft Yahei',
+    sans-serif;
+}
+
+.page-container {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+  padding-bottom: env(safe-area-inset-bottom);
+}
+
+.content-area {
+  padding: 20px 24px;
+  background-color: #ffffff;
+}
+
+.post-input {
+  width: 100%;
+  min-height: 120px;
+  font-size: 16px;
+  line-height: 1.6;
+  color: #333;
+  box-sizing: border-box;
+  padding: 0; /* Remove default padding to align with container */
+}
+
+.placeholder-text {
+  color: #999;
+  font-size: 16px;
+}
+
+.media-grid {
+  margin-top: 20px;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.media-item, .upload-item {
+  width: 100px;
+  height: 100px;
+  position: relative;
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+.media-image {
+  width: 100%;
+  height: 100%;
+  background-color: #f5f5f5;
+}
+
+.delete-tag {
+  position: absolute;
+  top: 0;
+  right: 0;
+  width: 20px;
+  height: 20px;
+  background: rgba(0, 0, 0, 0.5);
+  color: #fff;
+  font-size: 16px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-bottom-left-radius: 8px;
+}
+
+.upload-item {
+  background-color: #f7f7f7;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid #eeeeee; /* Subtle border */
+}
+
+.plus-icon {
+  width: 30px;
+  height: 30px;
+  position: relative;
+}
+
+.plus-icon::before,
+.plus-icon::after {
+  content: '';
+  position: absolute;
+  background-color: #ccc;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+}
+
+.plus-icon::before {
+  width: 2px;
+  height: 100%;
+}
+
+.plus-icon::after {
+  width: 100%;
+  height: 2px;
+}
+
+/* Footer Button */
+.footer-action {
+  margin-top: 40px;
+  padding: 0 24px 30px;
+}
+
+.submit-btn {
+  background: #07c160; /* WeChat Green */
+  color: #fff;
+  font-size: 17px;
+  font-weight: 600;
+  border-radius: 8px;
+  padding: 12px 0;
+  line-height: 1.5;
+  width: 100% !important; /* Force width */
+}
+
+.submit-btn.disabled {
+  background: #e0e0e0; /* Disabled Gray */
+  color: #b2b2b2;
+}

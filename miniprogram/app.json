@@ -1,0 +1,56 @@
+{
+  "pages": [
+    "pages/login/index",
+    "pages/index/index",
+    "pages/post/index",
+    "pages/practice/index",
+    "pages/ai-coach/index",
+    "pages/mine/index",
+    "pages/practice/question-bank/index",
+    "pages/practice/scenario/index",
+    "pages/practice/session/index",
+    "pages/practice/scenario/session/index",
+    "pages/record/index",
+    "pages/favorite/index"
+  ],
+  "window": {
+    "backgroundTextStyle": "light",
+    "navigationBarBackgroundColor": "#fff",
+    "navigationBarTitleText": "智聊英语",
+    "navigationBarTextStyle": "black"
+  },
+  "tabBar": {
+    "color": "#999999",
+    "selectedColor": "#007AFF",
+    "backgroundColor": "#FFFFFF",
+    "borderStyle": "black",
+    "list": [
+      {
+        "pagePath": "pages/index/index",
+        "text": "首页",
+        "iconPath": "assets/tabbar/home.png",
+        "selectedIconPath": "assets/tabbar/home_.png"
+      },
+      {
+        "pagePath": "pages/practice/index",
+        "text": "练习",
+        "iconPath": "assets/tabbar/work.png",
+        "selectedIconPath": "assets/tabbar/work_.png"
+      },
+      {
+        "pagePath": "pages/ai-coach/index",
+        "text": "AI陪练",
+        "iconPath": "assets/tabbar/mine.png",
+        "selectedIconPath": "assets/tabbar/mine_.png"
+      },
+      {
+        "pagePath": "pages/mine/index",
+        "text": "我的",
+        "iconPath": "assets/tabbar/mine.png",
+        "selectedIconPath": "assets/tabbar/mine_.png"
+      }
+    ]
+  },
+  "style": "v2",
+  "sitemapLocation": "sitemap.json"
+}

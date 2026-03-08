@@ -1,0 +1,64 @@
+<view class="container">
+  <!-- Header -->
+  <view class="coach-header">
+    <view class="coach-info">
+      <text class="coach-title">AI English Coach</text>
+      <text class="coach-subtitle">Your personal language tutor</text>
+    </view>
+    <image class="coach-icon" src="/assets/tabbar/mine.png" mode="aspectFit"></image>
+  </view>
+
+  <!-- Chat Area -->
+  <scroll-view class="chat-list" scroll-y="true" scroll-into-view="{{scrollIntoView}}" scroll-with-animation="true">
+    <block wx:for="{{messages}}" wx:key="id">
+      <!-- AI Message -->
+      <view class="message-item ai" wx:if="{{item.type === 'ai'}}" id="msg-{{index}}">
+        <view class="avatar-container ai-avatar">
+          <image class="avatar-img" src="/assets/tabbar/mine.png"></image>
+        </view>
+        <view class="content-wrapper">
+          <text class="content" user-select="true">{{item.content}}</text>
+        </view>
+      </view>
+
+      <!-- User Message -->
+      <view class="message-item user" wx:else id="msg-{{index}}">
+        <view class="content-wrapper">
+          <text class="content" user-select="true">{{item.content}}</text>
+        </view>
+        <view class="avatar-container user-avatar">
+           <open-data type="userAvatarUrl" class="avatar-img"></open-data>
+        </view>
+      </view>
+    </block>
+    
+    <!-- Loading Indicator -->
+    <view class="message-item ai" wx:if="{{loading}}">
+       <view class="avatar-container ai-avatar">
+          <image class="avatar-img" src="/assets/tabbar/mine.png"></image>
+        </view>
+        <view class="content-wrapper loading-wrapper">
+          <view class="dot-flashing"></view>
+        </view>
+    </view>
+    
+    <view id="scroll-bottom" style="height: 20rpx;"></view>
+  </scroll-view>
+
+  <!-- Input Area -->
+  <view class="input-area">
+    <view class="input-wrapper">
+      <input class="input-box" 
+             type="text" 
+             value="{{inputValue}}" 
+             bindinput="onInput" 
+             bindconfirm="sendMessage"
+             confirm-type="send"
+             placeholder="Ask a question or practice a sentence..." 
+             placeholder-class="placeholder-text"/>
+    </view>
+    <view class="btn-send {{inputValue ? 'active' : ''}}" bindtap="sendMessage">
+      <text>Send</text>
+    </view>
+  </view>
+</view>

@@ -1,0 +1,236 @@
+page {
+  background-color: #f7f9fc;
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+.container {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  padding: 0;
+}
+
+/* Header */
+.coach-header {
+  background: linear-gradient(135deg, #007AFF, #00c6ff);
+  padding: 40rpx 32rpx 20rpx;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  box-shadow: 0 4rpx 12rpx rgba(0, 122, 255, 0.2);
+  z-index: 10;
+}
+
+.coach-info {
+  display: flex;
+  flex-direction: column;
+}
+
+.coach-title {
+  font-size: 40rpx;
+  font-weight: 700;
+  color: white;
+  margin-bottom: 8rpx;
+}
+
+.coach-subtitle {
+  font-size: 24rpx;
+  color: rgba(255, 255, 255, 0.9);
+}
+
+.coach-icon {
+  width: 80rpx;
+  height: 80rpx;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.2);
+  padding: 10rpx;
+}
+
+/* Chat Area */
+.chat-list {
+  flex: 1;
+  padding: 30rpx 24rpx;
+  box-sizing: border-box;
+  overflow-y: scroll;
+}
+
+.message-item {
+  display: flex;
+  margin-bottom: 32rpx;
+  align-items: flex-start;
+  width: 100%;
+}
+
+.message-item.ai {
+  flex-direction: row;
+}
+
+.message-item.user {
+  flex-direction: row-reverse;
+}
+
+.avatar-container {
+  width: 72rpx;
+  height: 72rpx;
+  border-radius: 50%;
+  flex-shrink: 0;
+  overflow: hidden;
+  box-shadow: 0 2rpx 6rpx rgba(0,0,0,0.1);
+}
+
+.ai-avatar {
+  margin-right: 20rpx;
+  background: #fff;
+}
+
+.user-avatar {
+  margin-left: 20rpx;
+  background: #007AFF;
+}
+
+.avatar-img {
+  width: 100%;
+  height: 100%;
+}
+
+.content-wrapper {
+  max-width: 75%;
+  padding: 24rpx 30rpx;
+  border-radius: 24rpx;
+  font-size: 30rpx;
+  line-height: 1.5;
+  box-shadow: 0 2rpx 8rpx rgba(0,0,0,0.05);
+  word-wrap: break-word;
+}
+
+.message-item.ai .content-wrapper {
+  background-color: white;
+  color: #333;
+  border-top-left-radius: 4rpx;
+}
+
+.message-item.user .content-wrapper {
+  background-color: #007AFF;
+  color: white;
+  border-top-right-radius: 4rpx;
+  box-shadow: 0 4rpx 12rpx rgba(0, 122, 255, 0.2);
+}
+
+/* Input Area */
+.input-area {
+  background: white;
+  padding: 20rpx 24rpx;
+  padding-bottom: calc(20rpx + env(safe-area-inset-bottom));
+  display: flex;
+  align-items: center;
+  border-top: 1rpx solid #f0f0f0;
+  box-shadow: 0 -4rpx 12rpx rgba(0,0,0,0.02);
+}
+
+.input-wrapper {
+  flex: 1;
+  background: #f5f6f7;
+  border-radius: 40rpx;
+  padding: 0 30rpx;
+  height: 80rpx;
+  display: flex;
+  align-items: center;
+  margin-right: 20rpx;
+}
+
+.input-box {
+  width: 100%;
+  height: 100%;
+  font-size: 30rpx;
+  color: #333;
+}
+
+.placeholder-text {
+  color: #999;
+}
+
+.btn-send {
+  width: 120rpx;
+  height: 80rpx;
+  border-radius: 40rpx;
+  background: #e0e0e0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.3s;
+}
+
+.btn-send.active {
+  background: #007AFF;
+  box-shadow: 0 4rpx 12rpx rgba(0, 122, 255, 0.3);
+}
+
+.btn-send text {
+  color: white;
+  font-size: 28rpx;
+  font-weight: 600;
+}
+
+/* Loading Animation */
+.loading-wrapper {
+  background: white;
+  padding: 24rpx 30rpx;
+  border-radius: 24rpx;
+  border-top-left-radius: 4rpx;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 80rpx;
+}
+
+.dot-flashing {
+  position: relative;
+  width: 10rpx;
+  height: 10rpx;
+  border-radius: 5px;
+  background-color: #007AFF;
+  color: #007AFF;
+  animation: dotFlashing 1s infinite linear alternate;
+  animation-delay: .5s;
+}
+
+.dot-flashing::before, .dot-flashing::after {
+  content: '';
+  display: inline-block;
+  position: absolute;
+  top: 0;
+}
+
+.dot-flashing::before {
+  left: -15rpx;
+  width: 10rpx;
+  height: 10rpx;
+  border-radius: 5px;
+  background-color: #007AFF;
+  color: #007AFF;
+  animation: dotFlashing 1s infinite alternate;
+  animation-delay: 0s;
+}
+
+.dot-flashing::after {
+  left: 15rpx;
+  width: 10rpx;
+  height: 10rpx;
+  border-radius: 5px;
+  background-color: #007AFF;
+  color: #007AFF;
+  animation: dotFlashing 1s infinite alternate;
+  animation-delay: 1s;
+}
+
+@keyframes dotFlashing {
+  0% {
+    background-color: #007AFF;
+  }
+  50%,
+  100% {
+    background-color: rgba(0, 122, 255, 0.2);
+  }
+}

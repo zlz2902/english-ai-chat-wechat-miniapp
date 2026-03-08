@@ -1,0 +1,25 @@
+{
+  "compilerOptions": {
+    "target": "es2016",
+    "module": "commonjs",
+    "lib": ["es2018", "dom"],
+    "strict": true,
+    "forceConsistentCasingInFileNames": false,
+    "noImplicitAny": true,
+    "strictNullChecks": true,
+    "strictFunctionTypes": true,
+    "strictPropertyInitialization": true,
+    "noImplicitThis": true,
+    "alwaysStrict": true,
+    "moduleResolution": "node",
+    "types": ["miniprogram-api-typings"],
+    "experimentalDecorators": true,
+    "skipLibCheck": true,
+    "baseUrl": "./",
+    "paths": {
+      "@/*": ["miniprogram/*"]
+    }
+  },
+  "include": ["miniprogram/**/*.ts"],
+  "exclude": ["node_modules"]
+}

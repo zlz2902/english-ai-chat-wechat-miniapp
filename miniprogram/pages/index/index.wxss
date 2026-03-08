@@ -1,0 +1,285 @@
+/**index.wxss**/
+.home-container {
+  padding: 0;
+  display: block;
+  height: auto;
+  min-height: 100vh;
+  padding-bottom: 40rpx;
+}
+
+/* Hero Section */
+.hero-card {
+  margin: 30rpx;
+  padding: 40rpx;
+  background: linear-gradient(135deg, #6a11cb 0%, #2575fc 100%);
+  border-radius: 30rpx;
+  box-shadow: 0 10rpx 20rpx rgba(37, 117, 252, 0.3);
+  color: #fff;
+  position: relative;
+  overflow: hidden;
+}
+
+.hero-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 30rpx;
+}
+
+.hero-tag-box {
+  display: flex;
+  flex-direction: column;
+}
+
+.hero-tag-cn {
+  font-size: 32rpx;
+  font-weight: bold;
+}
+
+.hero-tag-en {
+  font-size: 20rpx;
+  opacity: 0.8;
+  text-transform: uppercase;
+  letter-spacing: 2rpx;
+}
+
+.hero-date {
+  font-size: 24rpx;
+  background: rgba(255, 255, 255, 0.2);
+  padding: 8rpx 20rpx;
+  border-radius: 20rpx;
+}
+
+.hero-content {
+  margin-bottom: 40rpx;
+  text-align: center;
+}
+
+.daily-word {
+  display: block;
+  font-size: 64rpx;
+  font-weight: 800;
+  margin-bottom: 10rpx;
+}
+
+.pron-container {
+  margin-bottom: 20rpx;
+}
+
+.daily-pron {
+  font-size: 28rpx;
+  opacity: 0.9;
+  font-family: monospace;
+}
+
+.daily-def {
+  font-size: 28rpx;
+  line-height: 1.4;
+  opacity: 0.9;
+  display: block;
+  max-width: 90%;
+  margin: 0 auto;
+}
+
+.start-btn {
+  background: #fff;
+  color: #2575fc;
+  border-radius: 50rpx;
+  border: none;
+  font-weight: bold;
+  box-shadow: 0 8rpx 16rpx rgba(0, 0, 0, 0.1);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 10rpx 0;
+  line-height: 1.2;
+}
+
+.start-btn.checked-in {
+  background: rgba(255, 255, 255, 0.2);
+  color: white;
+  box-shadow: none;
+  border: 2rpx solid rgba(255, 255, 255, 0.5);
+}
+
+.btn-text-cn {
+  font-size: 30rpx;
+}
+
+.btn-text-en {
+  font-size: 20rpx;
+}
+
+/* Feature Grid */
+.section-container {
+  margin: 40rpx 30rpx;
+}
+
+.section-header-row {
+  margin-bottom: 20rpx;
+}
+
+.section-title-cn {
+  font-size: 34rpx;
+  font-weight: bold;
+  color: #333;
+  margin-right: 10rpx;
+}
+
+.section-title-en {
+  font-size: 24rpx;
+  color: #999;
+}
+
+.feature-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 30rpx;
+}
+
+.feature-item {
+  background: #fff;
+  padding: 40rpx;
+  border-radius: 24rpx;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  box-shadow: 0 4rpx 20rpx rgba(0, 0, 0, 0.05);
+  transition: transform 0.1s;
+}
+
+.feature-item:active {
+  transform: scale(0.98);
+}
+
+.icon-box {
+  width: 100rpx;
+  height: 100rpx;
+  background: #f0f7ff;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 20rpx;
+}
+
+.feature-icon {
+  width: 50rpx;
+  height: 50rpx;
+}
+
+.feature-name {
+  font-size: 28rpx;
+  color: #333;
+  text-align: center;
+  white-space: pre-line;
+}
+
+/* Social Feed */
+.section-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20rpx;
+}
+
+.post-btn {
+  background: #2575fc;
+  color: #fff;
+  padding: 10rpx 24rpx;
+  border-radius: 30rpx;
+  display: flex;
+  align-items: center;
+  box-shadow: 0 4rpx 10rpx rgba(37, 117, 252, 0.3);
+}
+
+.post-icon {
+  font-size: 32rpx;
+  margin-right: 6rpx;
+  font-weight: bold;
+}
+
+.post-text {
+  font-size: 24rpx;
+}
+
+.feed-list {
+  display: flex;
+  flex-direction: column;
+  gap: 20rpx;
+}
+
+.feed-item {
+  background: #fff;
+  padding: 30rpx;
+  border-radius: 20rpx;
+  box-shadow: 0 4rpx 12rpx rgba(0, 0, 0, 0.05);
+}
+
+.feed-header {
+  display: flex;
+  align-items: center;
+  margin-bottom: 20rpx;
+}
+
+.feed-avatar {
+  width: 80rpx;
+  height: 80rpx;
+  border-radius: 50%;
+  margin-right: 20rpx;
+}
+
+.feed-info {
+  display: flex;
+  flex-direction: column;
+}
+
+.feed-name {
+  font-size: 30rpx;
+  font-weight: bold;
+  color: #333;
+}
+
+.feed-time {
+  font-size: 24rpx;
+  color: #999;
+}
+
+.feed-content {
+  font-size: 28rpx;
+  color: #444;
+  line-height: 1.6;
+  margin-bottom: 20rpx;
+}
+
+.feed-footer {
+  display: flex;
+  gap: 30rpx;
+  border-top: 1rpx solid #eee;
+  padding-top: 20rpx;
+}
+
+/* Feed Image & Action */
+.feed-image {
+  width: 100%;
+  border-radius: 12rpx;
+  margin-top: 16rpx;
+  max-height: 400rpx;
+  object-fit: cover;
+}
+
+.feed-action {
+  display: flex;
+  align-items: center;
+  gap: 8rpx;
+  padding: 8rpx 16rpx;
+  border-radius: 30rpx;
+  transition: background 0.2s;
+  font-size: 26rpx;
+  color: #666;
+}
+
+.feed-action:active {
+  background: #f0f0f0;
+}

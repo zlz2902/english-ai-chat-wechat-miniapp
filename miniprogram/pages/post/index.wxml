@@ -1,0 +1,38 @@
+<view class="page-container">
+  <view class="content-area">
+    <textarea 
+      class="post-input" 
+      placeholder="这一刻的想法..." 
+      placeholder-class="placeholder-text"
+      maxlength="500"
+      bindinput="handleInput"
+      value="{{content}}"
+      auto-height="{{true}}"
+      show-confirm-bar="{{false}}"
+    ></textarea>
+
+    <view class="media-grid">
+      <block wx:if="{{imageUrl}}">
+        <view class="media-item">
+          <image class="media-image" src="{{imageUrl}}" mode="aspectFill" bindtap="previewImage"></image>
+          <view class="delete-tag" catchtap="deleteImage">×</view>
+        </view>
+      </block>
+      <block wx:else>
+        <view class="upload-item" bindtap="chooseImage">
+          <view class="plus-icon"></view>
+        </view>
+      </block>
+    </view>
+  </view>
+
+  <view class="footer-action">
+    <button 
+      class="submit-btn {{(!content && !imageUrl) ? 'disabled' : ''}}" 
+      bindtap="submitPost" 
+      disabled="{{!content && !imageUrl}}"
+    >
+      发布
+    </button>
+  </view>
+</view>

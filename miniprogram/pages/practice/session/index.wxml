@@ -1,0 +1,78 @@
+<view class="container">
+  <!-- 顶部进度与计时 -->
+  <view class="header">
+    <view class="timer-container">
+      <view class="timer-circle {{isRecording ? 'recording' : ''}}">
+        <text class="timer-text">{{timeLeft}}s</text>
+        <text class="timer-label">Remaining</text>
+      </view>
+    </view>
+  </view>
+
+  <!-- 题目卡片 -->
+  <view class="question-card">
+    <view class="card-header">
+      <view class="tag {{difficulty}}">{{difficultyLabel}}</view>
+      <view class="topic-label">Topic: {{topic || 'General'}}</view>
+    </view>
+    <view class="question-content">
+      <text class="question-text">{{questionText}}</text>
+    </view>
+    <view class="card-footer">
+      <text class="tip-text">Speaking Practice</text>
+    </view>
+  </view>
+
+  <!-- 录音控制区 -->
+  <view class="controls-area">
+    <!-- 状态提示 -->
+    <view class="status-tip">
+      <text wx:if="{{!isRecording && !audioUrl}}">Tap microphone to start</text>
+      <text wx:if="{{isRecording}}" class="recording-text">Recording...</text>
+      <text wx:if="{{audioUrl && !isRecording}}">Review your answer</text>
+    </view>
+
+    <!-- 核心按钮组 -->
+    <view class="btn-group">
+      <!-- 录音按钮 -->
+      <view class="record-btn-wrapper" bindtap="toggleRecording" wx:if="{{!audioUrl}}">
+        <view class="record-btn {{isRecording ? 'active' : ''}}">
+          <image class="mic-icon" src="/assets/tabbar/work{{isRecording ? '_' : ''}}.png" mode="aspectFit"></image>
+        </view>
+        <view class="ripple" wx:if="{{isRecording}}"></view>
+      </view>
+
+      <!-- 完成后的操作按钮 -->
+      <view class="action-buttons" wx:if="{{audioUrl}}">
+        <view class="action-btn retry" bindtap="resetRecording">
+          <text class="icon">↻</text>
+          <text>Retry</text>
+        </view>
+        <view class="action-btn play" bindtap="playRecording">
+          <text class="icon">▶</text>
+          <text>{{isPlaying ? 'Playing' : 'Listen'}}</text>
+        </view>
+        <view class="action-btn submit" bindtap="submitAnswer">
+          <text class="icon">✓</text>
+          <text>Submit</text>
+        </view>
+      </view>
+    </view>
+  </view>
+
+  <!-- 评分结果弹窗 -->
+  <view class="result-modal" wx:if="{{showResult}}">
+    <view class="modal-content">
+      <view class="score-circle">
+        <text class="score-num">{{score}}</text>
+        <text class="score-label">Score</text>
+      </view>
+      <view class="feedback-text">
+        <text wx:if="{{score >= 80}}">Excellent! Great fluency and clarity.</text>
+        <text wx:elif="{{score >= 60}}">Good job! Keep practicing to improve.</text>
+        <text wx:else>Keep going! Practice makes perfect.</text>
+      </view>
+      <button class="btn-primary" bindtap="goBack">Back to List</button>
+    </view>
+  </view>
+</view>

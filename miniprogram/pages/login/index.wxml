@@ -1,0 +1,31 @@
+<view class="container">
+  <view class="header">
+    <image class="logo" src="/assets/logo.png" mode="aspectFit"></image>
+    <view class="title">智聊英语</view>
+    <view class="subtitle">您的AI口语陪练专家</view>
+  </view>
+
+  <view class="form-box">
+    <view class="input-group">
+      <view class="label">账号</view>
+      <input class="input" type="text" placeholder="请输入用户名" bindinput="onUsernameInput" value="{{username}}" />
+    </view>
+    <view class="input-group">
+      <view class="label">密码</view>
+      <input class="input" password="{{true}}" placeholder="请输入密码" bindinput="onPasswordInput" value="{{password}}" />
+    </view>
+    
+    <view class="input-group captcha-group" wx:if="{{captchaEnabled}}">
+      <view class="label">验证码</view>
+      <input class="input captcha-input" type="text" placeholder="请输入验证码" bindinput="onCodeInput" value="{{code}}" />
+      <image class="captcha-img" src="{{captchaImg}}" bindtap="getCaptcha" mode="scaleToFill" wx:if="{{captchaImg}}"></image>
+      <view class="captcha-placeholder" bindtap="getCaptcha" wx:if="{{!captchaImg}}">点击获取</view>
+    </view>
+
+    <button class="btn-login" bindtap="handleLogin">登 录</button>
+  </view>
+
+  <view class="footer">
+    <text class="copyright">Copyright © 2024 SpeakUp English</text>
+  </view>
+</view>

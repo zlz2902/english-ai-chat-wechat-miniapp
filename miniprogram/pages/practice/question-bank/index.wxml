@@ -1,0 +1,61 @@
+<view class="container">
+  <!-- Scrollable Tabs -->
+  <scroll-view class="tabs-scroll" scroll-x="true" enable-flex="true">
+    <view class="tabs">
+      <view class="tab-item {{currentTab === index ? 'active' : ''}}" 
+            wx:for="{{categories}}" 
+            wx:key="id" 
+            bindtap="onTabClick" 
+            data-index="{{index}}">
+        {{item.name}}
+      </view>
+    </view>
+  </scroll-view>
+
+  <!-- Quick Actions and Filters -->
+  <view class="filters">
+    <view class="search-bar">
+      <input class="search-input"
+             placeholder="搜索题目/主题/标签"
+             value="{{searchKeyword}}"
+             bindinput="onSearchInput"
+             confirm-type="search"
+             bindconfirm="onSearchConfirm" />
+      <view class="search-clear" wx:if="{{searchKeyword}}" bindtap="clearSearch">清除</view>
+    </view>
+    <view class="chip-group">
+      <view class="chip {{selectedDifficulty === item.key ? 'chip-active' : ''}}"
+            wx:for="{{difficulties}}"
+            wx:key="key"
+            bindtap="onFilterDifficulty"
+            data-key="{{item.key}}">
+        {{item.label}}
+      </view>
+    </view>
+  </view>
+
+  <!-- Question List -->
+  <scroll-view class="content-scroll" scroll-y="true">
+    <view class="question-list">
+      <block wx:for="{{questions}}" wx:key="id">
+        <view class="question-item">
+          <view class="question-header">
+            <text class="question-tag {{item.difficulty}}">{{item.difficultyLabel}}</text>
+            <text class="question-topic">{{item.topic}}</text>
+            <view class="fav-btn {{item.isFav ? 'fav-on' : ''}}" bindtap="toggleFavorite" data-id="{{item.id}}">
+              {{item.isFav ? '已收藏' : '收藏'}}
+            </view>
+          </view>
+          <text class="question-text">{{item.text}}</text>
+          <view class="question-footer">
+            <button wx:if="{{item.audio}}" class="btn-audio" size="mini" bindtap="playAudio" data-id="{{item.id}}" data-audio="{{item.audio}}">
+              {{playingId === item.id ? '播放中' : '播放示例'}}
+            </button>
+            <button class="btn-practice" size="mini" bindtap="onPractice" data-id="{{item.id}}" data-text="{{item.text}}" data-difficulty="{{item.difficulty}}" data-topic="{{item.topic}}">开始练习</button>
+          </view>
+        </view>
+      </block>
+      <view class="empty-tip" wx:if="{{questions.length === 0}}">暂无题目</view>
+    </view>
+  </scroll-view>
+</view>

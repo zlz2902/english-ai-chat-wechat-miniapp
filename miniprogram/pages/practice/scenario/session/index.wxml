@@ -1,0 +1,47 @@
+<view class="container">
+  <view class="header">
+    <view class="title-row">
+      <text class="title">{{title}}</text>
+      <text class="level-badge {{level}}">{{level}}</text>
+    </view>
+    <view class="persona-row" wx:if="{{personaName}}">
+      <text class="persona-label">Role:</text>
+      <text class="persona-val">{{personaName}}</text>
+    </view>
+  </view>
+
+  <scroll-view class="chat" scroll-y="true" scroll-into-view="{{toView}}" scroll-with-animation="true">
+    <block wx:for="{{history}}" wx:key="index">
+      <view id="msg-{{index}}" class="msg {{item.speaker === 'You' ? 'me' : 'bot'}}">
+        <view class="avatar-container">
+          <text class="avatar-text">{{item.speaker === 'You' ? 'Me' : (personaName[0] || 'A')}}</text>
+        </view>
+        <view class="bubble-container">
+          <text class="bubble">{{item.text}}</text>
+        </view>
+      </view>
+    </block>
+    <view id="msg-end" class="placeholder"></view>
+  </scroll-view>
+
+  <view class="footer">
+    <view class="footer-chat">
+      <scroll-view class="options-scroll" scroll-x="true" enable-flex="true" wx:if="{{options.length > 0}}">
+        <view class="options-wrapper">
+          <block wx:for="{{options}}" wx:key="index">
+            <view class="option-chip" bindtap="chooseOption" data-text="{{item.text}}">
+              <text>{{item.text}}</text>
+            </view>
+          </block>
+        </view>
+      </scroll-view>
+      
+      <view class="input-row">
+        <input class="msg-input" placeholder="Type a message..." value="{{inputValue}}" bindinput="onInput" bindconfirm="onSend" confirm-type="send"/>
+        <view class="send-btn" bindtap="onSend">
+          <text>Send</text>
+        </view>
+      </view>
+    </view>
+  </view>
+</view>

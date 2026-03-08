@@ -1,0 +1,29 @@
+<view class="container">
+  <view class="question-list">
+    <block wx:if="{{questions.length > 0}}">
+      <view class="question-card" wx:for="{{questions}}" wx:key="questionId" bindtap="handleQuestionTap" data-id="{{item.questionId}}">
+        <view class="card-header">
+          <text class="topic-tag">{{item.topic || 'Unknown'}}</text>
+          <view class="difficulty-badge {{item.difficulty == '3' ? 'high' : (item.difficulty == '2' ? 'medium' : 'low')}}">
+            {{item.difficulty == '3' ? 'Advanced' : (item.difficulty == '2' ? 'Intermediate' : 'Beginner')}}
+          </view>
+        </view>
+        <view class="card-content">
+          <text class="question-text">{{item.questionText}}</text>
+        </view>
+        <view class="card-footer">
+          <text class="tags">{{item.tags || ''}}</text>
+          <view class="action-btn" catchtap="handleUnfavorite" data-id="{{item.questionId}}">
+            <text class="heart-icon">❤️</text>
+          </view>
+        </view>
+      </view>
+    </block>
+    
+    <view wx:else class="empty-state">
+      <image class="empty-img" src="/assets/tabbar/work.png" mode="aspectFit"></image>
+      <text class="empty-text">暂无收藏内容</text>
+      <button class="go-btn" bindtap="goPractice">去练习</button>
+    </view>
+  </view>
+</view>

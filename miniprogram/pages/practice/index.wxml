@@ -1,0 +1,34 @@
+<view class="container">
+  <view class="header">
+    <text class="header-title">选择练习模式</text>
+    <text class="header-subtitle">Select your practice mode</text>
+  </view>
+
+  <view class="card-list">
+    <view class="card" bindtap="navigateToQuestionBank">
+      <view class="card-content">
+        <text class="card-title">口语题库</text>
+        <text class="card-desc">海量题库，分类练习</text>
+        <view class="tags">
+          <text class="tag">雅思</text>
+          <text class="tag">托福</text>
+          <text class="tag">日常</text>
+        </view>
+      </view>
+      <image class="card-icon" src="/assets/tabbar/work.png"></image>
+    </view>
+
+    <view class="card" bindtap="navigateToScenario">
+      <view class="card-content">
+        <text class="card-title">场景模拟</text>
+        <text class="card-desc">真实场景，沉浸对话</text>
+        <view class="tags">
+          <text class="tag">面试</text>
+          <text class="tag">旅游</text>
+          <text class="tag">购物</text>
+        </view>
+      </view>
+      <image class="card-icon" src="/assets/tabbar/home.png"></image>
+    </view>
+  </view>
+</view>

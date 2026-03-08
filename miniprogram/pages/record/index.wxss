@@ -1,0 +1,123 @@
+.container {
+  padding: 30rpx;
+  background-color: #f6f7f9;
+  min-height: 100vh;
+}
+
+.stats-card {
+  display: flex;
+  background: white;
+  padding: 40rpx;
+  border-radius: 20rpx;
+  box-shadow: 0 4rpx 20rpx rgba(0,0,0,0.05);
+  margin-bottom: 30rpx;
+  align-items: center;
+}
+
+.stat-item {
+  flex: 1;
+  text-align: center;
+}
+
+.stat-num {
+  font-size: 48rpx;
+  font-weight: bold;
+  color: #333;
+  display: block;
+}
+
+.stat-desc {
+  font-size: 24rpx;
+  color: #999;
+  margin-top: 10rpx;
+}
+
+.divider {
+  width: 2rpx;
+  height: 60rpx;
+  background: #eee;
+}
+
+.calendar-card {
+  background: white;
+  border-radius: 20rpx;
+  padding: 30rpx;
+  box-shadow: 0 4rpx 20rpx rgba(0,0,0,0.05);
+}
+
+.calendar-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 30rpx;
+  font-size: 32rpx;
+  font-weight: bold;
+  color: #333;
+}
+
+.arrow-btn {
+  padding: 10rpx 20rpx;
+  color: #999;
+}
+
+.week-header {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  text-align: center;
+  font-size: 24rpx;
+  color: #999;
+  margin-bottom: 20rpx;
+}
+
+.days-grid {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 10rpx;
+}
+
+.day-cell {
+  height: 80rpx;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.day-num {
+  width: 60rpx;
+  height: 60rpx;
+  line-height: 60rpx;
+  text-align: center;
+  border-radius: 50%;
+  font-size: 28rpx;
+  color: #333;
+}
+
+.day-num.prev,
+.day-num.next {
+  color: #ccc;
+  opacity: 0.5;
+}
+
+.day-num.checked {
+  background-color: #007aff;
+  color: white;
+}
+
+.day-num.today {
+  border: 2rpx solid #007aff;
+}
+
+.checkin-btn {
+  margin-top: 60rpx;
+  background: linear-gradient(135deg, #00C6FF, #0072FF);
+  color: white;
+  border-radius: 50rpx;
+  font-size: 32rpx;
+  box-shadow: 0 8rpx 20rpx rgba(0, 114, 255, 0.3);
+}
+
+.checkin-btn[disabled] {
+  background: #ccc;
+  color: #fff;
+  box-shadow: none;
+}

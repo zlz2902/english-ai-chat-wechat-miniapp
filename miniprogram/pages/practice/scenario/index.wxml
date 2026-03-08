@@ -1,0 +1,17 @@
+<view class="container">
+  <view class="scenario-list">
+    <block wx:for="{{scenarios}}" wx:key="id">
+      <view class="scenario-card">
+        <image class="scenario-image" src="{{item.image}}" mode="aspectFill"></image>
+        <view class="scenario-info">
+          <view class="info-top">
+            <text class="scenario-title">{{item.title}}</text>
+            <text class="scenario-level {{item.level}}">{{item.levelLabel}}</text>
+          </view>
+          <text class="scenario-desc">{{item.description}}</text>
+          <button class="btn-start" size="mini" bindtap="enterScenario" data-id="{{item.id}}" data-title="{{item.title}}" data-level="{{item.level}}">开始对话</button>
+        </view>
+      </view>
+    </block>
+  </view>
+</view>

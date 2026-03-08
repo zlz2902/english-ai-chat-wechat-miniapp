@@ -1,0 +1,84 @@
+<view class="container home-container">
+  <!-- Hero Section -->
+  <view class="hero-card">
+    <view class="hero-header">
+      <view class="hero-tag-box">
+        <text class="hero-tag-cn">每日一词</text>
+        <text class="hero-tag-en">Daily Word</text>
+      </view>
+      <text class="hero-date">{{currentDate}}</text>
+    </view>
+    <view class="hero-content">
+      <text class="daily-word">{{dailyWord.word}}</text>
+      <view class="pron-container">
+        <text class="daily-pron">{{dailyWord.pronunciation}}</text>
+      </view>
+      <view class="def-container">
+        <text class="daily-def">{{dailyWord.definition}}</text>
+      </view>
+    </view>
+    <button class="start-btn {{isCheckedIn ? 'checked-in' : ''}}" bindtap="handleCheckin">
+      <text class="btn-text-cn">{{isCheckedIn ? '今日已打卡' : '每日打卡'}}</text>
+      <text class="btn-text-en">{{isCheckedIn ? 'Checked In' : 'Daily Check-in'}}</text>
+    </button>
+  </view>
+
+  <!-- Feature Grid -->
+  <view class="section-container">
+    <view class="section-header-row">
+      <text class="section-title-cn">探索</text>
+      <text class="section-title-en">Explore</text>
+    </view>
+    <view class="feature-grid">
+      <block wx:for="{{features}}" wx:key="id">
+        <view class="feature-item" bindtap="navigateToFeature" data-url="{{item.url}}">
+          <view class="icon-box">
+            <image class="feature-icon" src="{{item.icon}}"></image>
+          </view>
+          <text class="feature-name">{{item.name}}</text>
+        </view>
+      </block>
+    </view>
+  </view>
+
+  <!-- Social Feed -->
+  <view class="section-container">
+    <view class="section-header">
+      <view class="section-title-box">
+        <text class="section-title-cn">社区动态</text>
+        <text class="section-title-en">Community</text>
+      </view>
+      <view class="post-btn" bindtap="handlePost">
+        <text class="post-icon">+</text>
+        <text class="post-text">发布 / Post</text>
+      </view>
+    </view>
+    <view class="feed-list">
+      <block wx:for="{{feedList}}" wx:key="id">
+        <view class="feed-item">
+          <view class="feed-header">
+            <image class="feed-avatar" src="{{item.avatar}}"></image>
+            <view class="feed-info">
+              <text class="feed-name">{{item.name}}</text>
+              <text class="feed-time">{{item.time}}</text>
+            </view>
+          </view>
+          <view class="feed-content">
+            <text>{{item.content}}</text>
+            <image wx:if="{{item.image}}" src="{{item.image}}" class="feed-image" mode="widthFix" bindtap="previewImage" data-src="{{item.image}}"></image>
+          </view>
+          <view class="feed-footer">
+            <view class="feed-action" bindtap="handleLike" data-id="{{item.id}}">
+              <text>{{item.hasLiked ? '❤️' : '👍'}}</text>
+              <text>{{item.likes}}</text>
+            </view>
+            <view class="feed-action" bindtap="handleComment" data-id="{{item.id}}">
+              <text>💬</text>
+              <text>{{item.comments}}</text>
+            </view>
+          </view>
+        </view>
+      </block>
+    </view>
+  </view>
+</view>

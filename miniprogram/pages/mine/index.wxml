@@ -1,0 +1,81 @@
+<view class="mine-container">
+  <!-- Header Section -->
+  <view class="user-header">
+    <view class="user-card" bindtap="handleEditProfile">
+      <image class="avatar" src="{{userInfo.avatarUrl || '/assets/profile.jpg'}}" mode="aspectFill"></image>
+      <view class="info-box">
+        <text class="nickname">{{userInfo.nickName || '登录 / 注册'}}</text>
+        <text class="user-id" wx:if="{{isLogin}}">ID: 888888</text>
+        <text class="user-desc" wx:else>点击登录，同步学习进度</text>
+      </view>
+      <view class="edit-icon" wx:if="{{isLogin}}">✎</view>
+    </view>
+  </view>
+
+  <!-- Stats Grid (Optional, makes it look more "App-like") -->
+  <view class="stats-grid" wx:if="{{isLogin}}">
+    <view class="stat-item">
+      <text class="stat-num">{{studyStats.totalDays || 0}}</text>
+      <text class="stat-label">天数</text>
+    </view>
+    <view class="stat-item">
+      <text class="stat-num">{{studyStats.score || 0}}</text>
+      <text class="stat-label">积分</text>
+    </view>
+  </view>
+
+  <!-- Menu List Group 1: Learning -->
+  <view class="menu-group">
+    <view class="menu-item" wx:if="{{isAdmin}}" bindtap="navigateTo" data-url="/pages/admin/index">
+      <view class="menu-left">
+        <text class="menu-icon">⚙️</text>
+        <text class="menu-text">管理后台</text>
+      </view>
+      <text class="arrow">></text>
+    </view>
+    <view class="menu-item" bindtap="navigateTo" data-url="/pages/record/index">
+      <view class="menu-left">
+        <image class="menu-icon-img" src="/assets/tabbar/work.png"></image>
+        <text class="menu-text">我的打卡</text>
+      </view>
+      <text class="arrow">></text>
+    </view>
+    <view class="menu-item" bindtap="navigateTo" data-url="/pages/favorite/index">
+      <view class="menu-left">
+        <image class="menu-icon-img" src="/assets/tabbar/mine.png"></image>
+        <text class="menu-text">我的收藏</text>
+      </view>
+      <text class="arrow">></text>
+    </view>
+  </view>
+
+  <!-- Menu List Group 2: Account -->
+  <view class="menu-group">
+    <view class="menu-item" bindtap="handleEditAvatar">
+      <view class="menu-left">
+        <text class="menu-icon">🖼️</text>
+        <text class="menu-text">修改头像</text>
+      </view>
+      <text class="arrow">></text>
+    </view>
+    <view class="menu-item" bindtap="handleChangePassword">
+      <view class="menu-left">
+        <text class="menu-icon">🔒</text>
+        <text class="menu-text">修改密码</text>
+      </view>
+      <text class="arrow">></text>
+    </view>
+    <view class="menu-item" bindtap="handleAbout">
+      <view class="menu-left">
+        <text class="menu-icon">ℹ️</text>
+        <text class="menu-text">关于我们</text>
+      </view>
+      <text class="arrow">></text>
+    </view>
+  </view>
+
+  <!-- Logout Button -->
+  <view class="logout-box" wx:if="{{isLogin}}">
+    <button class="btn-logout" bindtap="handleLogout">退出登录</button>
+  </view>
+</view>
