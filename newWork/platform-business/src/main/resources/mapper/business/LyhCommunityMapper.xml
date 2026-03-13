@@ -24,7 +24,9 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
     </resultMap>
 
     <sql id="selectLyhCommunityVo">
-        select p.post_id, p.user_id, p.content, p.images, p.likes_count, p.comments_count, p.visibility, p.status, p.del_flag, p.create_by, p.create_time, p.remark,
+        select p.post_id, p.user_id, p.content, p.images, p.likes_count,
+               (select count(1) from lyh_post_comment c where c.post_id = p.post_id and c.del_flag = '0') as comments_count,
+               p.visibility, p.status, p.del_flag, p.create_by, p.create_time, p.remark,
                coalesce(u.nick_name, su.nick_name) as nick_name,
                coalesce(u.avatar_url, su.avatar) as avatar_url
         from lyh_post p
@@ -156,6 +158,8 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         <where>  
             <if test="postId != null "> and c.post_id = #{postId}</if>
             <if test="userId != null "> and c.user_id = #{userId}</if>
+            and c.del_flag = '0'
+            <if test="status != null and status != ''"> and c.status = #{status}</if>
         </where>
         order by c.create_time desc
     </select>
@@ -166,5 +170,22 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
             #{commentId}
         </foreach>
     </delete>
+    
+    <!-- 查询要删除的评论(仅用于统计对应postId) -->
+    <select id="selectCommentsByIds" resultType="LyhPostComment">
+        select comment_id, post_id
+        from lyh_post_comment
+        where comment_id in
+        <foreach item="commentId" collection="array" open="(" separator="," close=")">
+            #{commentId}
+        </foreach>
+    </select>
+    
+    <!-- 按帖子批量扣减评论数 -->
+    <update id="decrementCommentsCountByPost">
+        update lyh_post
+        set comments_count = case when comments_count &gt;= #{delta} then comments_count - #{delta} else 0 end
+        where post_id = #{postId}
+    </update>
     
 </mapper>

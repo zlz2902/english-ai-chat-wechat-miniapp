@@ -70,7 +70,17 @@ public class JobInvokeUtil
      */
     public static boolean isValidClassName(String invokeTarget)
     {
-        return StringUtils.countMatches(invokeTarget, ".") > 1;
+        if (StringUtils.isEmpty(invokeTarget))
+        {
+            return false;
+        }
+        // 排除文件路径或包含非法字符的情况（如 Windows 路径、斜杠、连字符等）
+        if (invokeTarget.contains(":") || invokeTarget.contains("\\") || invokeTarget.contains("/") || invokeTarget.contains("-"))
+        {
+            return false;
+        }
+        // 严格校验是否符合 Java 类全名语法
+        return invokeTarget.matches("([a-zA-Z_$][\\w$]*\\.)+[A-Za-z_$][\\w$]*");
     }
 
     /**

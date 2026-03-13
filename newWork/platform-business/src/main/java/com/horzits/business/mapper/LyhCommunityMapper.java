@@ -102,4 +102,19 @@ public interface LyhCommunityMapper {
      * @return
      */
     public int deleteCommentByIds(Long[] commentIds);
+    
+    /**
+     * 查询评论（按ID集合）
+     * @param commentIds
+     * @return
+     */
+    public List<LyhPostComment> selectCommentsByIds(Long[] commentIds);
+    
+    /**
+     * 按帖子扣减评论数
+     * @param postId
+     * @param delta
+     * @return
+     */
+    public int decrementCommentsCountByPost(@Param("postId") Long postId, @Param("delta") int delta);
 }
