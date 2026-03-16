@@ -1,11 +1,18 @@
 "use strict";
 let request;
+let BASE_URL = "";
 try {
   const reqModule = require("../../../utils/request.js");
   request = reqModule.default || reqModule;
 } catch (e) {
   console.error("Failed to require request module:", e);
   request = (opts) => Promise.reject(new Error("Request module missing"));
+}
+try {
+  const constants = require("../../../utils/constant.js");
+  BASE_URL = (constants && (constants.BASE_URL || constants.default?.BASE_URL)) || "";
+} catch (e) {
+  console.warn("Failed to load BASE_URL, images without absolute URL may fail.", e);
 }
 
 Page({
@@ -31,10 +38,17 @@ Page({
             3: { label: "高级", value: "hard" },
           };
           const lv = levelMap[item.level] || levelMap["2"];
+          const rawImg = item.imageUrl || "";
+          let image = "/assets/banner/banner01.jpg";
+          if (rawImg) {
+            image = rawImg.startsWith("http")
+              ? rawImg
+              : (BASE_URL ? `${BASE_URL}${encodeURI(rawImg)}` : rawImg);
+          }
           return {
             id: item.scenarioId,
             title: item.title,
-            image: item.imageUrl || "/assets/banner/banner01.jpg",
+            image,
             level: lv.value,
             levelLabel: lv.label,
             description: item.description,
