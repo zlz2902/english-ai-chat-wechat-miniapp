@@ -39,6 +39,15 @@ public class LyhPracticeCategoryController extends BaseController {
         return getDataTable(list);
     }
 
+    @GetMapping("/open/list")
+    public TableDataInfo openList(LyhPracticeCategory query) {
+        startPage();
+        query.setStatus("0");
+        query.setDelFlag("0");
+        List<LyhPracticeCategory> list = service.selectLyhPracticeCategoryList(query);
+        return getDataTable(list);
+    }
+
     @ApiOperation(value = "导出练习分类列表", httpMethod = "POST", response = AppRestResult.class)
     @PreAuthorize("@ss.hasPermi('lyh:practiceCategory:export')")
     @Log(title = "练习分类", businessType = BusinessType.EXPORT)
@@ -81,4 +90,3 @@ public class LyhPracticeCategoryController extends BaseController {
                 : AppRestResult.error("操作失败");
     }
 }
-

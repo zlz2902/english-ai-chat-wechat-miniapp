@@ -22,6 +22,7 @@ import com.horzits.common.exception.user.UserPasswordNotMatchException;
 import com.horzits.common.utils.DateUtils;
 import com.horzits.common.utils.MessageUtils;
 import com.horzits.common.utils.StringUtils;
+import com.horzits.common.utils.ServletUtils;
 import com.horzits.common.utils.ip.IpUtils;
 import com.horzits.framework.manager.AsyncManager;
 import com.horzits.framework.manager.factory.AsyncFactory;
@@ -111,6 +112,13 @@ public class SysLoginService
     public void validateCaptcha(String username, String code, String uuid)
     {
         boolean captchaEnabled = configService.selectCaptchaEnabled();
+        String clientFrom = null;
+        try {
+            clientFrom = ServletUtils.getRequest() != null ? ServletUtils.getRequest().getHeader("X-Client-From") : null;
+        } catch (Exception ignored) {}
+        if ("admin-web".equalsIgnoreCase(clientFrom)) {
+            return;
+        }
         if (captchaEnabled)
         {
             String verifyKey = CacheConstants.CAPTCHA_CODE_KEY + StringUtils.nvl(uuid, "");

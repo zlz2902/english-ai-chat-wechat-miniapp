@@ -39,6 +39,15 @@ public class LyhQuestionController extends BaseController {
         return getDataTable(list);
     }
 
+    @GetMapping("/open/list")
+    public TableDataInfo openList(LyhQuestion query) {
+        startPage();
+        query.setStatus("0");
+        query.setDelFlag("0");
+        List<LyhQuestion> list = service.selectLyhQuestionList(query);
+        return getDataTable(list);
+    }
+
     @ApiOperation(value = "导出题目列表", httpMethod = "POST", response = AppRestResult.class)
     @PreAuthorize("@ss.hasPermi('lyh:question:export')")
     @Log(title = "口语题库题目", businessType = BusinessType.EXPORT)
@@ -81,4 +90,3 @@ public class LyhQuestionController extends BaseController {
                 : AppRestResult.error("操作失败");
     }
 }
-

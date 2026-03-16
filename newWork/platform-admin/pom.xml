@@ -57,6 +57,10 @@
         </dependency>
         <dependency>
             <groupId>com.horzits</groupId>
+            <artifactId>platform-system</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.horzits</groupId>
             <artifactId>platform-business</artifactId>
         </dependency>
         <dependency>

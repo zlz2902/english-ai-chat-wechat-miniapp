@@ -113,7 +113,20 @@ public class LyhCommunityServiceImpl implements ILyhCommunityService {
 
     @Override
     public int deleteCommentByIds(Long[] commentIds) {
-        return lyhCommunityMapper.deleteCommentByIds(commentIds);
+        // 先查询出这些评论对应的帖子ID，用于扣减计数
+        List<LyhPostComment> toDelete = lyhCommunityMapper.selectCommentsByIds(commentIds);
+        int rows = lyhCommunityMapper.deleteCommentByIds(commentIds);
+        if (rows > 0 && toDelete != null && !toDelete.isEmpty()) {
+            java.util.Map<Long, Long> cnt = new java.util.HashMap<>();
+            for (LyhPostComment c : toDelete) {
+                if (c.getPostId() == null) continue;
+                cnt.put(c.getPostId(), cnt.getOrDefault(c.getPostId(), 0L) + 1);
+            }
+            for (java.util.Map.Entry<Long, Long> e : cnt.entrySet()) {
+                lyhCommunityMapper.decrementCommentsCountByPost(e.getKey(), e.getValue().intValue());
+            }
+        }
+        return rows;
     }
 
     /**

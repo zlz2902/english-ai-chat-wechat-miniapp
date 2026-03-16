@@ -153,6 +153,13 @@
                 <version>${kaptcha.version}</version>
             </dependency>
 
+            <!-- 加密库 Bouncy Castle -->
+            <dependency>
+                <groupId>org.bouncycastle</groupId>
+                <artifactId>bcprov-jdk15on</artifactId>
+                <version>1.70</version>
+            </dependency>
+
             <!-- 定时任务-->
             <dependency>
                 <groupId>com.horzits</groupId>
