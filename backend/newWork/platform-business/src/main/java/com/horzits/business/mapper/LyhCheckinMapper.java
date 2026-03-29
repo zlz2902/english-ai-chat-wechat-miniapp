@@ -75,6 +75,8 @@ public interface LyhCheckinMapper
      */
     public LyhCheckin selectLatestByUserId(@Param("userId") Long userId);
 
+    public LyhCheckin selectLatestBeforeByUserId(@Param("userId") Long userId, @Param("date") Date date);
+
     /**
      * 获取用户总打卡天数
      * @param userId

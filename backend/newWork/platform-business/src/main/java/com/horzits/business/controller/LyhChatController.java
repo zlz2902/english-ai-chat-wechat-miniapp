@@ -164,6 +164,26 @@ public class LyhChatController {
         if (systemPrompt == null || systemPrompt.isEmpty()) {
             systemPrompt = "You are a helpful assistant.";
         }
+        String personaName = scenario.getPersonaName();
+        if (personaName == null || personaName.isEmpty()) {
+            personaName = "Assistant";
+        }
+        String level = scenario.getLevel();
+        String levelHint = "A2";
+        if ("1".equals(level) || "easy".equalsIgnoreCase(level)) {
+            levelHint = "A1";
+        } else if ("3".equals(level) || "hard".equalsIgnoreCase(level)) {
+            levelHint = "B1";
+        }
+        String roleplayPolicy = String.join("\n",
+                "ROLEPLAY MODE (IMPORTANT):",
+                "- Stay in character as: " + personaName + ".",
+                "- Context: " + (scenario.getTitle() == null ? "" : scenario.getTitle()) + ". " + (scenario.getDescription() == null ? "" : scenario.getDescription()) + ".",
+                "- Your goal is to complete the in-scenario interaction by asking ONE short, practical question each turn.",
+                "- Do NOT teach English, do NOT correct grammar, do NOT behave like a language coach.",
+                "- Do NOT output JSON; output natural dialogue only.",
+                "- Keep replies short and specific. Difficulty: " + levelHint + ".");
+        systemPrompt = roleplayPolicy + "\n\n" + systemPrompt;
 
         // Construct messages
         List<Map<String, String>> messages = new ArrayList<>();
@@ -183,10 +203,23 @@ public class LyhChatController {
             }
         }
 
-        Map<String, String> userMsg = new HashMap<>();
-        userMsg.put("role", "user");
-        userMsg.put("content", userMessage);
-        messages.add(userMsg);
+        boolean lastIsSameUser = false;
+        if (!messages.isEmpty()) {
+            Map<String, String> last = messages.get(messages.size() - 1);
+            if (last != null && "user".equalsIgnoreCase(last.get("role"))) {
+                String lastContent = last.get("content");
+                if (StrUtil.isNotBlank(lastContent) && StrUtil.isNotBlank(userMessage)
+                        && lastContent.trim().equals(userMessage.trim())) {
+                    lastIsSameUser = true;
+                }
+            }
+        }
+        if (!lastIsSameUser) {
+            Map<String, String> userMsg = new HashMap<>();
+            userMsg.put("role", "user");
+            userMsg.put("content", userMessage);
+            messages.add(userMsg);
+        }
 
         messages = applyContextWindow(messages, dashscopeMaxContextChars);
 
@@ -195,15 +228,41 @@ public class LyhChatController {
         aliyunRequest.put("messages", messages);
         aliyunRequest.put("temperature", dashscopeTemperature);
         aliyunRequest.put("presence_penalty", dashscopePresencePenalty);
-        JSONObject responseFormat = new JSONObject();
-        responseFormat.put("type", "json_object");
-        aliyunRequest.put("response_format", responseFormat);
 
-        return callAliyunApi(aliyunRequest);
+        return callAliyunApiPlain(aliyunRequest);
     }
 
     @PostMapping("/coach")
     public AppRestResult coach(@RequestBody Map<String, Object> request) {
+        // 支持两种入参方式：
+        // 1) { message: "..." , history: [...] } —— 标准教练接口（带工具/会话）
+        // 2) { messages: [ {role, content}, ... ] } —— 小程序练习页快速调用（不走工具，仅返回JSON对象）
+        if (request.get("messages") != null) {
+            try {
+                @SuppressWarnings("unchecked")
+                List<Map<String, String>> provided = (List<Map<String, String>>) request.get("messages");
+                List<Map<String, String>> msgs = new ArrayList<>();
+                Map<String, String> sys = new HashMap<>();
+                sys.put("role", "system");
+                // 保证包含“JSON”指令，满足 DashScope 对 json_object 的校验要求
+                sys.put("content", COACH_SYSTEM_PROMPT);
+                msgs.add(sys);
+                if (provided != null) {
+                    msgs.addAll(provided);
+                }
+                JSONObject aliyunRequest = new JSONObject();
+                aliyunRequest.put("model", dashscopeModel != null ? dashscopeModel : DEFAULT_MODEL);
+                aliyunRequest.put("messages", applyContextWindow(msgs, dashscopeMaxContextChars));
+                aliyunRequest.put("temperature", dashscopeTemperature);
+                aliyunRequest.put("presence_penalty", dashscopePresencePenalty);
+                JSONObject responseFormat = new JSONObject().putOnce("type", "json_object");
+                aliyunRequest.put("response_format", responseFormat);
+                return callAliyunApi(aliyunRequest);
+            } catch (Exception e) {
+                return AppRestResult.error("Invalid messages payload");
+            }
+        }
+
         String userMessage = (String) request.get("message");
         List<Map<String, String>> history = (List<Map<String, String>>) request.get("history");
         String userId = request.get("userId") != null ? String.valueOf(request.get("userId")) : "";
@@ -238,7 +297,8 @@ public class LyhChatController {
         userMsg.put("content", userMessage);
         messages.add(userMsg);
 
-        JSONArray tools = buildToolsSchema();
+        boolean enableTools = StrUtil.isNotBlank(userId) || StrUtil.isNotBlank(sessionId) || StrUtil.isNotBlank(scenarioId);
+        JSONArray tools = enableTools ? buildToolsSchema() : null;
         JSONObject first = new JSONObject();
         first.put("model", dashscopeModel != null ? dashscopeModel : DEFAULT_MODEL);
         first.put("messages", applyContextWindow(messages, dashscopeMaxContextChars));
@@ -246,12 +306,15 @@ public class LyhChatController {
         first.put("presence_penalty", dashscopePresencePenalty);
         JSONObject responseFormat = new JSONObject().putOnce("type", "json_object");
         first.put("response_format", responseFormat);
-        first.put("tools", tools);
-        first.put("tool_choice", "auto");
+        if (tools != null && !tools.isEmpty()) {
+            first.put("tools", tools);
+            first.put("tool_choice", "auto");
+        }
 
         try {
             JSONObject response = doAliReq(first);
-            for (int loop = 0; loop < 3; loop++) {
+            boolean toolsUsed = false;
+            for (int loop = 0; loop < 4; loop++) {
                 JSONArray choices = response.getJSONArray("choices");
                 if (choices == null || choices.isEmpty()) {
                     return AppRestResult.error("Empty response from AI provider");
@@ -259,7 +322,7 @@ public class LyhChatController {
                 JSONObject firstChoice = choices.getJSONObject(0);
                 JSONObject message = firstChoice.getJSONObject("message");
                 JSONArray toolCalls = message.getJSONArray("tool_calls");
-                if (toolCalls != null && !toolCalls.isEmpty()) {
+                if (toolCalls != null && !toolCalls.isEmpty() && tools != null && !tools.isEmpty()) {
                     for (int i = 0; i < toolCalls.size(); i++) {
                         JSONObject tc = toolCalls.getJSONObject(i);
                         String id = tc.getStr("id");
@@ -281,20 +344,56 @@ public class LyhChatController {
                         toolMsg.put("name", name);
                         messages.add((Map) toolMsg);
                     }
+                    toolsUsed = true;
                     JSONObject follow = new JSONObject();
                     follow.put("model", dashscopeModel != null ? dashscopeModel : DEFAULT_MODEL);
                     follow.put("messages", applyContextWindow(messages, dashscopeMaxContextChars));
                     follow.put("temperature", dashscopeTemperature);
                     follow.put("presence_penalty", dashscopePresencePenalty);
                     follow.put("response_format", responseFormat);
-                    follow.put("tools", tools);
-                    follow.put("tool_choice", "auto");
+                    if (!toolsUsed) {
+                        follow.put("tools", tools);
+                        follow.put("tool_choice", "auto");
+                    }
                     response = doAliReq(follow);
                     continue;
                 }
                 String content = message.getStr("content");
                 try {
-                    JSONUtil.parseObj(content);
+                    JSONObject obj = JSONUtil.parseObj(content);
+                    if (obj != null && StrUtil.isBlank(obj.getStr("coach_action")) && StrUtil.isNotBlank(obj.getStr("name"))
+                            && obj.get("arguments") != null && tools != null && !tools.isEmpty()) {
+                        String name = obj.getStr("name");
+                        JSONObject args = new JSONObject();
+                        try {
+                            Object argObj = obj.get("arguments");
+                            if (argObj instanceof JSONObject) {
+                                args = (JSONObject) argObj;
+                            } else {
+                                args = JSONUtil.parseObj(String.valueOf(argObj));
+                            }
+                        } catch (Exception ignore) {
+                        }
+                        String result = executeTool(name, args, userId, sessionId, scenarioId);
+                        Map<String, String> toolMsg = new HashMap<>();
+                        toolMsg.put("role", "assistant");
+                        toolMsg.put("content", result);
+                        messages.add(toolMsg);
+
+                        toolsUsed = true;
+                        JSONObject follow = new JSONObject();
+                        follow.put("model", dashscopeModel != null ? dashscopeModel : DEFAULT_MODEL);
+                        follow.put("messages", applyContextWindow(messages, dashscopeMaxContextChars));
+                        follow.put("temperature", dashscopeTemperature);
+                        follow.put("presence_penalty", dashscopePresencePenalty);
+                        follow.put("response_format", responseFormat);
+                        if (!toolsUsed) {
+                            follow.put("tools", tools);
+                            follow.put("tool_choice", "auto");
+                        }
+                        response = doAliReq(follow);
+                        continue;
+                    }
                     updateSessionFromModel(state, content, userMessage);
                     return AppRestResult.success((Object) content);
                 } catch (Exception ignore) {
@@ -307,6 +406,35 @@ public class LyhChatController {
                     wrapper.put("difficulty", "");
                     updateSessionFromModel(state, wrapper.toString(), userMessage);
                     return AppRestResult.success((Object) wrapper.toString());
+                }
+            }
+            JSONObject finalReq = new JSONObject();
+            finalReq.put("model", dashscopeModel != null ? dashscopeModel : DEFAULT_MODEL);
+            finalReq.put("messages", applyContextWindow(messages, dashscopeMaxContextChars));
+            finalReq.put("temperature", dashscopeTemperature);
+            finalReq.put("presence_penalty", dashscopePresencePenalty);
+            finalReq.put("response_format", responseFormat);
+            JSONObject finalResp = doAliReq(finalReq);
+            JSONArray c2 = finalResp.getJSONArray("choices");
+            if (c2 != null && !c2.isEmpty()) {
+                JSONObject m2 = c2.getJSONObject(0).getJSONObject("message");
+                String content2 = m2 != null ? m2.getStr("content") : "";
+                if (StrUtil.isNotBlank(content2)) {
+                    try {
+                        JSONUtil.parseObj(content2);
+                        updateSessionFromModel(state, content2, userMessage);
+                        return AppRestResult.success((Object) content2);
+                    } catch (Exception ignore) {
+                        JSONObject wrapper = new JSONObject();
+                        wrapper.put("coach_action", "feedback_and_ask");
+                        wrapper.put("message", content2);
+                        wrapper.put("question", "");
+                        wrapper.put("topic", "");
+                        wrapper.put("focus", "");
+                        wrapper.put("difficulty", "");
+                        updateSessionFromModel(state, wrapper.toString(), userMessage);
+                        return AppRestResult.success((Object) wrapper.toString());
+                    }
                 }
             }
             return AppRestResult.error("Tool loop exceeded limit");
@@ -355,6 +483,36 @@ public class LyhChatController {
             } else {
                 return AppRestResult.error("AI Provider Error: " + response.getStatus() + " " + response.body());
             }
+        } catch (Exception e) {
+            e.printStackTrace();
+            return AppRestResult.error("Internal Server Error: " + e.getMessage());
+        }
+    }
+
+    private AppRestResult callAliyunApiPlain(JSONObject aliyunRequest) {
+        try {
+            String apiKey = getApiKey();
+            if (apiKey == null || apiKey.isEmpty()) {
+                return AppRestResult.error("Missing DASHSCOPE_API_KEY");
+            }
+            HttpResponse response = HttpRequest.post(ALIYUN_API_URL)
+                    .header("Authorization", "Bearer " + apiKey)
+                    .header("Content-Type", "application/json")
+                    .body(aliyunRequest.toString())
+                    .execute();
+
+            if (response.isOk()) {
+                JSONObject jsonResponse = JSONUtil.parseObj(response.body());
+                JSONArray choices = jsonResponse.getJSONArray("choices");
+                if (choices != null && !choices.isEmpty()) {
+                    JSONObject firstChoice = choices.getJSONObject(0);
+                    JSONObject message = firstChoice.getJSONObject("message");
+                    String content = message != null ? message.getStr("content") : "";
+                    return AppRestResult.success((Object) (content == null ? "" : content));
+                }
+                return AppRestResult.error("Empty response from AI provider");
+            }
+            return AppRestResult.error("AI Provider Error: " + response.getStatus() + " " + response.body());
         } catch (Exception e) {
             e.printStackTrace();
             return AppRestResult.error("Internal Server Error: " + e.getMessage());
@@ -415,22 +573,6 @@ public class LyhChatController {
         f2.put("parameters", p2);
         t2.put("function", f2);
         tools.add(t2);
-
-        JSONObject t3 = new JSONObject();
-        t3.put("type", "function");
-        JSONObject f3 = new JSONObject();
-        f3.put("name", "log_dialogue");
-        f3.put("description", "记录对话日志");
-        JSONObject p3 = new JSONObject();
-        JSONObject p3props = new JSONObject();
-        p3props.put("session_id", new JSONObject().putOnce("type", "string"));
-        p3props.put("role", new JSONObject().putOnce("type", "string"));
-        p3props.put("content", new JSONObject().putOnce("type", "string"));
-        p3.put("type", "object");
-        p3.put("properties", p3props);
-        f3.put("parameters", p3);
-        t3.put("function", f3);
-        tools.add(t3);
 
         JSONObject t4 = new JSONObject();
         t4.put("type", "function");

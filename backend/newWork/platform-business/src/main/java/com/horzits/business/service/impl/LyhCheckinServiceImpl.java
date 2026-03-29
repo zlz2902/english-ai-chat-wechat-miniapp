@@ -58,7 +58,31 @@ public class LyhCheckinServiceImpl implements ILyhCheckinService
     @Override
     public int insertLyhCheckin(LyhCheckin lyhCheckin)
     {
-        lyhCheckin.setCreateTime(DateUtils.getNowDate());
+        if (lyhCheckin.getUserId() == null || lyhCheckin.getCheckinDate() == null) {
+            return 0;
+        }
+        Date dateOnly = Date.from(lyhCheckin.getCheckinDate().toInstant().atZone(ZoneId.systemDefault()).toLocalDate()
+                .atStartOfDay(ZoneId.systemDefault()).toInstant());
+        LyhCheckin exists = lyhCheckinMapper.selectByUserIdAndDate(lyhCheckin.getUserId(), dateOnly);
+        if (exists != null) {
+            throw new RuntimeException("该用户该日期已打卡");
+        }
+        if (lyhCheckin.getStreakAfter() == null) {
+            LyhCheckin prev = lyhCheckinMapper.selectLatestBeforeByUserId(lyhCheckin.getUserId(), dateOnly);
+            int streak = 1;
+            if (prev != null) {
+                LocalDate prevDate = prev.getCheckinDate().toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
+                LocalDate thisDate = dateOnly.toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
+                if (prevDate.plusDays(1).equals(thisDate)) {
+                    streak = prev.getStreakAfter() + 1;
+                }
+            }
+            lyhCheckin.setStreakAfter(streak);
+        }
+        lyhCheckin.setCheckinDate(dateOnly);
+        if (lyhCheckin.getCreateTime() == null) {
+            lyhCheckin.setCreateTime(DateUtils.getNowDate());
+        }
         return lyhCheckinMapper.insertLyhCheckin(lyhCheckin);
     }
 

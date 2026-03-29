@@ -45,6 +45,13 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         order by c.checkin_date desc
         limit 1
     </select>
+    
+    <select id="selectLatestBeforeByUserId" resultMap="LyhCheckinResult">
+        <include refid="selectLyhCheckinVo"/>
+        where c.user_id = #{userId} and c.checkin_date &lt; #{date}
+        order by c.checkin_date desc
+        limit 1
+    </select>
 
     <select id="selectCountByUserId" resultType="int">
         select count(1) from lyh_checkin c where c.user_id = #{userId}

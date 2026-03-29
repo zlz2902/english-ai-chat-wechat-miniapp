@@ -65,6 +65,12 @@ public class LyhQuestionController extends BaseController {
         return AppRestResult.success(service.selectLyhQuestionByQuestionId(questionId));
     }
 
+    @ApiOperation(value = "开放获取题目详情（小程序）", httpMethod = "GET", response = AppRestResult.class)
+    @GetMapping("/open/{questionId}")
+    public AppRestResult openInfo(@PathVariable("questionId") Long questionId) {
+        return AppRestResult.success(service.selectLyhQuestionByQuestionId(questionId));
+    }
+
     @ApiOperation(value = "新增题目", httpMethod = "POST", response = AppRestResult.class)
     @PreAuthorize("@ss.hasPermi('lyh:question:add')")
     @Log(title = "口语题库题目", businessType = BusinessType.INSERT)
